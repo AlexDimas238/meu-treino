@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Meu treino</title>
+<meta name="description" content="Meu treino: app de treino de academia que roda no navegador, salva os dados no aparelho, com temporizador de descanso, cargas por exercício, histórico e montador de treino.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700;800&family=Barlow:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#ECEEF1;--surface:#FFFFFF;--surface2:#F5F6F8;--ink:#15181C;--muted:#5D6570;--line:#D6DAE0;
+  --accent:#E3A008;--accent-ink:#1D1500;--done:#23935A;--done-soft:#DDF2E6;
+  color-scheme:light;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#0B0C0E;--surface:#17191D;--surface2:#1F2227;--ink:#F1F1EE;--muted:#9AA1AA;--line:#2B2F35;
+  --accent:#F4B321;--accent-ink:#1D1500;--done:#3BC47A;--done-soft:#163324;
+  color-scheme:dark;}}
+:root[data-theme="dark"]{
+  --bg:#0B0C0E;--surface:#17191D;--surface2:#1F2227;--ink:#F1F1EE;--muted:#9AA1AA;--line:#2B2F35;
+  --accent:#F4B321;--accent-ink:#1D1500;--done:#3BC47A;--done-soft:#163324;
+  color-scheme:dark;}
+*,*::before,*::after{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--bg);color:var(--ink);font:400 16px/1.5 Barlow,system-ui,-apple-system,"Segoe UI",sans-serif;-webkit-font-smoothing:antialiased;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);overflow-x:hidden}
+a{color:inherit}
+:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+.wrap{max-width:620px;margin:0 auto;padding:24px 16px 40px}
+.display{font-family:"Barlow Condensed",Barlow,system-ui,sans-serif;letter-spacing:.01em}
+header.hero{padding:16px 2px 8px}
+.logo{display:flex;align-items:center;gap:10px;color:var(--accent)}
+.logo svg{width:44px;height:44px;flex:none}
+h1{margin:14px 0 0;font-family:"Barlow Condensed",Barlow,sans-serif;font-size:3.2rem;line-height:.95;font-weight:800;letter-spacing:.01em}
+.sub{margin:10px 0 0;color:var(--muted);font-size:1.05rem}
+.btn{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;height:58px;margin-top:22px;border-radius:16px;border:0;font-weight:700;font-size:1.15rem;background:var(--accent);color:var(--accent-ink);text-decoration:none}
+.btn:hover{filter:brightness(1.05)}
+.btn svg{width:22px;height:22px}
+.sec{margin:34px 2px 12px;font-family:"Barlow Condensed",Barlow,sans-serif;font-size:1.7rem;font-weight:800;line-height:1.1}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:16px 16px 14px;margin-bottom:10px}
+.card h3{margin:0 0 4px;font-size:1.1rem;font-weight:600;line-height:1.25}
+.card p{margin:0;color:var(--muted);font-size:.95rem}
+.grid{display:grid;grid-template-columns:1fr;gap:0}
+.steps{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:6px 16px}
+.steps h3{margin:12px 0 4px;font-size:1.1rem;font-weight:700}
+.steps h3:first-child{margin-top:10px}
+.steps ol{margin:0 0 10px;padding-left:22px}
+.steps li{margin:6px 0;color:var(--ink)}
+.steps li b{font-weight:600}
+.steps .tag{display:inline-block;font-size:.8rem;font-weight:600;padding:1px 8px;border-radius:6px;background:var(--done-soft);color:var(--done)}
+footer{margin-top:40px;padding-top:18px;border-top:1px solid var(--line);color:var(--muted);font-size:.9rem;text-align:center}
+footer a{color:var(--ink);font-weight:600}
+</style>
+</head>
+<body>
+<main class="wrap">
+
+  <header class="hero">
+    <div class="logo" aria-hidden="true">
+      <svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+        <line x1="4" y1="24" x2="44" y2="24"/>
+        <rect x="8" y="14" width="5" height="20" rx="2" fill="currentColor"/>
+        <rect x="35" y="14" width="5" height="20" rx="2" fill="currentColor"/>
+        <rect x="2" y="18" width="4" height="12" rx="1.5" fill="currentColor"/>
+        <rect x="42" y="18" width="4" height="12" rx="1.5" fill="currentColor"/>
+      </svg>
+    </div>
+    <h1 class="display">Meu treino</h1>
+    <p class="sub">App de treino de academia que roda no navegador e salva tudo no seu aparelho, com temporizador de descanso, cargas por exercício, histórico e montador de treino.</p>
+    <a class="btn" href="treino.html">Abrir o aplicativo</a>
+  </header>
+
+  <h2 class="sec">Recursos</h2>
+  <section class="grid" aria-label="Recursos do aplicativo">
+    <article class="card">
+      <h3>Treinos por dia</h3>
+      <p>Um treino para cada dia da semana, com animação mostrando como fazer cada exercício.</p>
+    </article>
+    <article class="card">
+      <h3>Cargas que acompanham o exercício</h3>
+      <p>Carga e repetições ficam salvas por exercício e aparecem em todos os dias em que ele é usado.</p>
+    </article>
+    <article class="card">
+      <h3>Temporizador de descanso</h3>
+      <p>Contagem regressiva entre as séries, com aviso quando o descanso termina.</p>
+    </article>
+    <article class="card">
+      <h3>Histórico e evolução</h3>
+      <p>Cada sessão fica registrada e você acompanha a evolução de carga ao longo do tempo.</p>
+    </article>
+    <article class="card">
+      <h3>Modelos prontos</h3>
+      <p>Full body, ABC, ABCD, Upper/Lower e Push/Pull/Legs para começar sem planejar do zero.</p>
+    </article>
+    <article class="card">
+      <h3>Montador de treino</h3>
+      <p>Monte o seu próprio treino escolhendo os exercícios, séries e repetições de cada dia.</p>
+    </article>
+  </section>
+
+  <h2 class="sec">Como instalar na tela inicial</h2>
+  <section class="steps" aria-label="Instruções de instalação">
+    <h3>iPhone (Safari)</h3>
+    <ol>
+      <li>Abra o <b>Safari</b> e acesse o aplicativo.</li>
+      <li>Toque no ícone <b>Compartilhar</b> (quadrado com seta para cima).</li>
+      <li>Role e toque em <b>Adicionar à Tela de Início</b>.</li>
+      <li>Confirme em <b>Adicionar</b>.</li>
+    </ol>
+    <h3>Android (Chrome)</h3>
+    <ol>
+      <li>Abra o <b>Chrome</b> e acesse o aplicativo.</li>
+      <li>Toque no menu <b>⋮</b> no canto superior direito.</li>
+      <li>Toque em <b>Adicionar à tela inicial</b> ou <b>Instalar app</b>.</li>
+      <li>Confirme para criar o atalho.</li>
+    </ol>
+  </section>
+
+  <footer>
+    <p>Código-fonte no <a href="https://github.com/AlexDimas238/meu-treino" rel="noopener">repositório do GitHub</a>.</p>
+  </footer>
+
+</main>
+</body>
+</html>
