@@ -29,7 +29,7 @@ html{scroll-padding-top:env(safe-area-inset-top,0px)}
 *,*::before,*::after{box-sizing:border-box}
 body{margin:0;background:var(--bg);color:var(--ink);font:400 16px/1.45 Barlow,system-ui,-apple-system,"Segoe UI",sans-serif;-webkit-font-smoothing:antialiased}
 body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:10;background:var(--bg)}
-button,input{font:inherit;color:inherit}
+button,input,textarea{font:inherit;color:inherit}
 button{cursor:pointer}
 :focus-visible{outline:3px solid var(--accent);outline-offset:2px}
 .wrap{max-width:620px;margin:0 auto;padding:16px 16px 180px}
@@ -179,6 +179,9 @@ nav.tabs button.sel svg{color:var(--accent)}
 .gcard details{margin:6px 10px 0;font-size:.85rem;color:var(--muted)}
 .gcard table{width:100%;border-collapse:collapse;margin-top:4px}.gcard td{padding:2px 0;border-top:1px solid var(--line)}.gcard td:last-child{text-align:right}
 .bkcard .prow .btn{flex:1 1 150px}
+.bkpaste{margin-top:12px;padding-top:12px;border-top:1px solid var(--line)}
+.bkpaste textarea{display:block;width:100%;min-height:150px;box-sizing:border-box;margin-top:8px;border-radius:12px;border:1px solid var(--line);background:var(--surface2);padding:10px 12px;font:500 .85rem/1.4 ui-monospace,SFMono-Regular,Menlo,monospace;resize:vertical;overflow-wrap:anywhere}
+.bkpaste textarea:focus{outline:2px solid var(--accent);outline-offset:1px}
 @media (prefers-reduced-motion:reduce){*{transition:none!important}.cta,.cta .btn{animation:none!important}}
 </style>
 </head>
@@ -197,7 +200,7 @@ nav.tabs button.sel svg{color:var(--accent)}
   <button type="button" data-tab="historico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/></svg>Histórico</button>
 </div></nav>
 <div class="toast" id="toast"></div>
-<input type="file" id="impfile" accept="application/json,.json" hidden aria-hidden="true" tabindex="-1">
+<input type="file" id="impfile" hidden aria-hidden="true" tabindex="-1">
 
 <script>
 /* ===== Ilustrações animadas ===== */
@@ -511,6 +514,7 @@ function render(){
    ${sess(day)&&done?'<button class="btn ghost" id="reset" type="button">Descartar séries deste treino</button>':""}
    ${other?`<p class="hint">Você tem o Dia ${state.session.day} em andamento. Marcar séries aqui substitui aquele treino.</p>`:""}
   </div>`;
+  h+=backupHTML();
   $("#app").innerHTML=h;setSync();
 }
 function groupsOf(items){const set=new Set(items.map(it=>EX[it.id]&&EX[it.id].g).filter(Boolean));return Object.keys(G).filter(g=>set.has(g));}
@@ -724,7 +728,7 @@ function renderHome(){
   ${ses?`<div class="bar" aria-label="Séries concluídas"><i style="width:${total?done/total*100:0}%"></i></div><p style="font-size:.88rem">${done} de ${total} séries feitas</p>`:""}
   <button type="button" class="btn" id="homestart">${ses?"Continuar treino":"Iniciar treino"} · Dia ${nd}</button></section>`;
   const H=state.history;
-  if(!H.length){h+=`<p class="empty">Seus indicadores aparecem após o primeiro treino.</p>`+backupHTML();$("#app").innerHTML=h;setSync();return;}
+  if(!H.length){h+=`<p class="empty">Seus indicadores aparecem após o primeiro treino.</p>`;$("#app").innerHTML=h;setSync();return;}
   const now=Date.now(),mine=H.filter(x=>(x.prog||"fullbody6")===state.activeProgram);
   const week=mine.filter(x=>now-x.date<7*864e5).length;
   const weeks=new Set(H.map(x=>weekStart(x.date)));let w0=weekStart(now);if(!weeks.has(w0))w0-=7*864e5;
@@ -752,22 +756,25 @@ function renderHome(){
     h+=`<div class="gcard"><h4>Evolução de carga</h4><div class="groups">${ids.map(x=>`<button type="button" class="chip" data-hx="${x.id}" aria-pressed="${x===sel}">${esc(EX[x.id].n.replace(/ com Halter.*$/,""))}</button>`).join("")}</div>
      ${chartSVG(sel.id)}<p class="hint">${esc(EX[sel.id].n)}: de ${p[0].w} para ${p[p.length-1].w} kg.</p></div>`;
   }else h+=`<p class="hint">A evolução de carga aparece quando um exercício tiver dois treinos registrados.</p>`;
-  h+=backupHTML();
   $("#app").innerHTML=h;setSync();
 }
-/* ===== Backup: exportar e importar os dados ===== */
+/* ===== Backup: exportar e importar os dados (seção no fim da aba Treino) ===== */
 const LS_UNDO=LS+"-antes-importar";
 function hasUndo(){try{return !!localStorage.getItem(LS_UNDO);}catch(e){return false;}}
 function backupHTML(){
   const n=state.history.length,p=state.programs.length;
   return `<h3 class="sec display">Backup</h3><div class="pcard bkcard"><h4>Seus dados ficam só neste aparelho</h4>
   <p class="d2">Exporte um arquivo com ${n} ${n===1?"treino":"treinos"} no histórico, ${p} ${p===1?"programa seu":"programas seus"}, cargas e ajustes. Faça isso antes de trocar de celular, navegador ou endereço do app.</p>
-  <div class="prow"><button type="button" class="btn" id="bkexp">Exportar backup</button><button type="button" class="btn ghost" id="bkimp">Importar backup</button>${hasUndo()?'<button type="button" class="btn ghost" id="bkundo">Desfazer importação</button>':""}</div></div>`;
+  <div class="prow"><button type="button" class="btn" id="bkexp">Exportar backup</button><button type="button" class="btn ghost" id="bkimp">Importar backup</button><button type="button" class="btn ghost" id="bkcopy">Copiar backup</button><button type="button" class="btn ghost" id="bkpaste">Colar backup</button>${hasUndo()?'<button type="button" class="btn ghost" id="bkundo">Desfazer importação</button>':""}</div>
+  <div class="bkpaste" id="bkpastebox"${ui.bkpaste?"":" hidden"}><p class="d2">Cole aqui o conteúdo do backup: o texto copiado com <b>Copiar backup</b> no outro aparelho ou o conteúdo do arquivo .json aberto em um app de arquivos ou notas. Serve quando o seletor de arquivos do celular não aceita o .json.</p>
+  <textarea id="bktext" rows="6" spellcheck="false" autocapitalize="off" autocorrect="off" aria-label="Conteúdo do backup" placeholder='{"app":"meu-treino", ...}'></textarea>
+  <div class="prow"><button type="button" class="btn" id="bkpasteok">Importar</button><button type="button" class="btn ghost" id="bkpastecancel">Cancelar</button></div></div></div>`;
 }
 function backupName(){const d=new Date();return "meu-treino-backup-"+d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0")+".json";}
+function backupJSON(){return JSON.stringify({app:"meu-treino",version:1,exportedAt:new Date().toISOString(),state},null,2);}
 async function exportBackup(){
   const name=backupName();
-  const json=JSON.stringify({app:"meu-treino",version:1,exportedAt:new Date().toISOString(),state},null,2);
+  const json=backupJSON();
   const blob=new Blob([json],{type:"application/json"});
   /* No celular, usa a folha de compartilhamento quando ela aceita arquivos; o download fica como alternativa */
   const mobile=window.matchMedia&&matchMedia("(pointer:coarse)").matches;
@@ -782,28 +789,99 @@ async function exportBackup(){
   setTimeout(()=>URL.revokeObjectURL(url),2000);
   toast("Backup exportado");
 }
-function readFileText(file){
-  return new Promise((res,rej)=>{const r=new FileReader();r.onload=()=>res(String(r.result||""));r.onerror=()=>rej(new Error("Não foi possível ler o arquivo."));r.readAsText(file);});
-}
-/* Aceita o envelope { app, version, state } ou o state cru do localStorage. Lança erro com mensagem em pt-BR. */
-function parseBackup(text){
-  let data;
-  try{data=JSON.parse(text);}catch(e){throw new Error("O arquivo não é um JSON válido.");}
-  const isObj=o=>o&&typeof o==="object"&&!Array.isArray(o);
-  if(!isObj(data))throw new Error("O arquivo não tem o formato de backup do Meu treino.");
-  let s=data;
-  if("app" in data||"state" in data){
-    if(data.app!==undefined&&data.app!=="meu-treino")throw new Error("Este backup é de outro aplicativo ("+String(data.app)+").");
-    s=data.state;
+/* Copia o JSON para a área de transferência: no iOS o download às vezes não aparece, e copiar + colar é a rota mais confiável */
+async function copyBackup(){
+  const json=backupJSON();
+  let ok=false;
+  if(navigator.clipboard&&navigator.clipboard.writeText){try{await navigator.clipboard.writeText(json);ok=true;}catch(e){}}
+  if(!ok){
+    const ta=document.createElement("textarea");ta.value=json;ta.setAttribute("readonly","");ta.style.cssText="position:fixed;top:0;left:0;width:1px;height:1px;opacity:0";
+    document.body.appendChild(ta);ta.focus();ta.select();ta.setSelectionRange(0,json.length);
+    try{ok=document.execCommand("copy");}catch(e){ok=false;}
+    ta.remove();
   }
-  if(!isObj(s))throw new Error("O arquivo não tem o formato de backup do Meu treino.");
-  if(!("history" in s)&&!("weights" in s)&&!("programs" in s))throw new Error("O arquivo não tem os dados esperados (histórico, cargas ou programas).");
-  if(s.history!==undefined&&!Array.isArray(s.history))throw new Error("O histórico do arquivo está em formato inválido.");
-  if(s.programs!==undefined&&!Array.isArray(s.programs))throw new Error("Os programas do arquivo estão em formato inválido.");
-  if(s.weights!==undefined&&!isObj(s.weights))throw new Error("As cargas do arquivo estão em formato inválido.");
+  if(ok){toast("Backup copiado");return;}
+  /* Último recurso: deixa o JSON no painel de colar para o usuário selecionar e copiar manualmente */
+  openPasteBox(json);
+  alert("Não foi possível copiar automaticamente.\n\nO backup foi colocado no campo de texto abaixo: toque nele, selecione tudo e copie.");
+}
+function openPasteBox(text){
+  ui.bkpaste=true;
+  const box=$("#bkpastebox"),ta=$("#bktext");if(!box||!ta)return;
+  box.hidden=false;if(text!==undefined)ta.value=text;
+  ta.focus();box.scrollIntoView({block:"nearest",behavior:"smooth"});
+}
+function closePasteBox(){
+  ui.bkpaste=false;
+  const box=$("#bkpastebox"),ta=$("#bktext");if(!box||!ta)return;
+  box.hidden=true;ta.value="";
+}
+function readFileText(file){
+  return new Promise((res,rej)=>{const r=new FileReader();r.onload=()=>res(String(r.result||""));r.onerror=()=>rej(new Error("O navegador não conseguiu abrir o conteúdo do arquivo."));r.readAsText(file);});
+}
+/* Aceita o envelope { app, version, state } ou o state cru do localStorage, vindo de arquivo ou de texto colado. Lança erro com mensagem em pt-BR. */
+function parseBackup(text){
+  const isObj=o=>o&&typeof o==="object"&&!Array.isArray(o);
+  /* Descreve o que foi encontrado, para o usuário saber o que colou/selecionou */
+  const descr=v=>{
+    if(v===null)return "valor nulo";
+    if(Array.isArray(v))return "uma lista com "+v.length+" "+(v.length===1?"item":"itens")+", não um objeto";
+    if(typeof v==="string")return "um texto ("+(v.length>40?v.slice(0,40)+"…":v)+")";
+    if(typeof v==="number"||typeof v==="boolean")return "um "+(typeof v==="number"?"número":"valor lógico")+" ("+String(v)+")";
+    if(isObj(v)){const k=Object.keys(v);return k.length?"um objeto sem os campos esperados. Chaves encontradas: "+k.slice(0,8).join(", ")+(k.length>8?"…":""):"um objeto vazio";}
+    return "um valor do tipo "+typeof v;
+  };
+  let t=String(text==null?"":text).replace(/^\uFEFF/,"").trim();
+  /* Colado do console ou de um app de notas: '{"weights":...}' entre aspas simples */
+  if(t.length>1&&t[0]==="'"&&t[t.length-1]==="'")t=t.slice(1,-1).trim();
+  if(!t)throw new Error("O conteúdo está vazio.");
+  let data;
+  try{data=JSON.parse(t);}catch(e){throw new Error("O conteúdo não é um JSON válido: "+(e&&e.message?e.message:"erro de sintaxe")+".");}
+  /* JSON codificado duas vezes (ex.: copiado do console ou do Notas do iPhone) vira uma string; tenta de novo até 2 vezes */
+  for(let i=0;i<2&&typeof data==="string";i++){
+    const inner=data.replace(/^\uFEFF/,"").trim();
+    try{data=JSON.parse(inner);}catch(e){break;}
+  }
+  if(!isObj(data))throw new Error("O conteúdo não tem o formato de backup do Meu treino: é "+descr(data)+".");
+  /* Versões anteriores do app exportavam o envelope com "estado" e um espelho em pt-BR no nível de cima (cargas, historico, ...) */
+  const toMs=v=>{if(typeof v==="number")return v;if(typeof v==="string"){const n=Date.parse(v);if(!isNaN(n))return n;const m=+v;if(!isNaN(m))return m;}return 0;};
+  const PT={cargas:"weights",historico:"history",descansos:"rest",trocas:"swaps",sessaoEmAndamento:"session",programas:"programs",programaAtivo:"activeProgram",ultimasReps:"lastReps"};
+  const hasPT=o=>isObj(o)&&("cargas" in o||"historico" in o);
+  const fromPT=o=>{const r={};for(const k in PT)if(o[k]!==undefined)r[PT[k]]=o[k];if(o.atualizadoEm!==undefined)r.updatedAt=toMs(o.atualizadoEm);return r;};
+  const hasEN=o=>isObj(o)&&("history" in o||"weights" in o||"programs" in o);
+  const nomes=isObj(data.nomes)?data.nomes:null;
+  let s=data;
+  if("app" in data||"state" in data||"estado" in data){
+    if(data.app!==undefined&&data.app!=="meu-treino")throw new Error("Este backup é de outro aplicativo ("+String(data.app)+").");
+    s=data.state!==undefined?data.state:data.estado;
+    if(typeof s==="string"){try{s=JSON.parse(s);}catch(e){}}
+    if(!hasEN(s)&&hasPT(data))s=fromPT(data);
+    if(!isObj(s))throw new Error("O campo \"state\" do backup não é um objeto: é "+descr(s)+".");
+  }else if(!hasEN(data)&&hasPT(data))s=fromPT(data);
+  if(!("history" in s)&&!("weights" in s)&&!("programs" in s)){
+    const k=Object.keys(s);
+    throw new Error("O conteúdo não tem os dados esperados (histórico, cargas ou programas)."+(k.length?" Chaves encontradas: "+k.slice(0,8).join(", ")+(k.length>8?"…":"")+".":" O objeto está vazio."));
+  }
+  if(s.history!==undefined&&!Array.isArray(s.history))throw new Error("O histórico do backup está em formato inválido.");
+  if(s.programs!==undefined&&!Array.isArray(s.programs))throw new Error("Os programas do backup estão em formato inválido.");
+  if(s.weights!==undefined&&!isObj(s.weights))throw new Error("As cargas do backup estão em formato inválido.");
   const copy=JSON.parse(JSON.stringify(s));
-  copy.history=(copy.history||[]).filter(x=>isObj(x)&&Array.isArray(x.ex));
+  const num=(v,d)=>{const n=typeof v==="string"?parseFloat(v):v;return Number.isFinite(n)?n:d;};
+  /* Normaliza cada treino do histórico para o render nunca depender de campo ausente (formatos antigos não têm prog, label, min...) */
+  copy.history=(copy.history||[]).filter(x=>isObj(x)&&Array.isArray(x.ex)).map(x=>{
+    const ex=x.ex.filter(e=>isObj(e)&&e.id!=null&&e.id!=="").map(e=>{
+      const sets=(Array.isArray(e.sets)?e.sets:[]).filter(isObj).map(y=>({...y,w:num(y.w,0),r:y.r}));
+      const r={...e,id:String(e.id),sets};
+      if(!EX[r.id]&&!r.n&&nomes&&nomes[r.id])r.n=String(nomes[r.id]);
+      return r;
+    });
+    const nsets=ex.reduce((a,e)=>a+e.sets.length,0);
+    const vol=ex.reduce((a,e)=>a+e.sets.reduce((b,y)=>b+(y.w||0)*(num(y.r,0)||0),0),0);
+    return {...x,date:toMs(x.date),day:Math.max(1,Math.round(num(x.day,1))),prog:x.prog||"fullbody6",sets:num(x.sets,nsets),vol:num(x.vol,vol),min:num(x.min,0),ex};
+  });
   copy.programs=(copy.programs||[]).filter(x=>isObj(x)&&x.id&&Array.isArray(x.days));
+  if(!(isObj(copy.session)&&isObj(copy.session.sets)&&Number.isFinite(num(copy.session.day,NaN))))copy.session=null;
+  if(copy.updatedAt!==undefined)copy.updatedAt=toMs(copy.updatedAt);
   return copy;
 }
 function replaceState(s){
@@ -812,19 +890,31 @@ function replaceState(s){
   ui={tab:"inicio",day:null,open:null};
   stopTimer();save();render();scrollTo(0,0);
 }
+const PASTE_HINT="Se o seletor de arquivos do celular não aceitar o .json, abra o arquivo em um app de arquivos ou notas, copie o conteúdo e use Colar backup.";
 async function importBackup(file){
   if(!file)return;
+  const nome=file.name?' "'+file.name+'"':"";
+  if(!file.size){alert("O arquivo"+nome+" está vazio (0 bytes).\n\n"+PASTE_HINT+"\n\nNada foi alterado.");return;}
+  let text;
+  try{text=await readFileText(file);}
+  catch(e){alert("Não foi possível ler o arquivo"+nome+".\n\n"+(e&&e.message?e.message+"\n\n":"")+PASTE_HINT+"\n\nNada foi alterado.");return;}
+  importBackupText(text);
+}
+/* Fluxo comum de arquivo e texto colado: valida, confirma, guarda o estado para desfazer e aplica. Retorna true se importou. */
+function importBackupText(text){
   try{
-    const s=parseBackup(await readFileText(file));
+    const s=parseBackup(text);
     const nh=s.history.length,np=s.programs.length;
     const when=s.updatedAt?new Date(s.updatedAt).toLocaleString("pt-BR",{day:"2-digit",month:"2-digit",year:"numeric",hour:"2-digit",minute:"2-digit"}):"";
     const msg=`Importar este backup?\n\nEle tem ${nh} ${nh===1?"treino":"treinos"} no histórico e ${np} ${np===1?"programa seu":"programas seus"}${when?", salvo em "+when:""}.\n\nTodo o conteúdo atual deste aparelho (histórico, cargas, programas e treino em andamento) será substituído. Uma cópia do estado atual fica guardada para você desfazer.`;
-    if(!confirm(msg))return;
+    if(!confirm(msg))return false;
     try{localStorage.setItem(LS_UNDO,JSON.stringify(state));}catch(e){}
     replaceState(s);
     toast(`Backup importado: ${nh} ${nh===1?"treino":"treinos"}`);
+    return true;
   }catch(e){
     alert("Não foi possível importar o backup.\n\n"+(e&&e.message?e.message:"Erro desconhecido.")+"\n\nNada foi alterado.");
+    return false;
   }
 }
 function undoImport(){
@@ -845,7 +935,7 @@ function renderHistory(){
     h+=state.history.map(s=>{
       const dt=new Date(s.date);
       return `<details class="hist"><summary><span><span class="d1">${histLabel(s)}, ${dt.toLocaleDateString("pt-BR",{weekday:"long",day:"2-digit",month:"2-digit"})}</span><br><span class="d2">${s.sets} séries em ${s.min} min</span></span><span class="kg">${Math.round(s.vol).toLocaleString("pt-BR")} kg</span></summary>
-      <ul>${s.ex.map(x=>`<li><span>${esc(EX[x.id]?EX[x.id].n:x.id)}</span><span>${x.sets.map(y=>`${y.w||0} kg x ${y.r||"?"}`).join(", ")}</span></li>`).join("")}</ul></details>`;
+      <ul>${s.ex.map(x=>`<li><span>${esc(EX[x.id]?EX[x.id].n:(x.n||x.id))}</span><span>${x.sets.map(y=>`${y.w||0} kg x ${y.r||"?"}`).join(", ")}</span></li>`).join("")}</ul></details>`;
     }).join("");
   }
   const ids=Object.keys(state.weights).filter(k=>EX[k]).sort((a,b)=>Object.keys(G).indexOf(EX[a].g)-Object.keys(G).indexOf(EX[b].g));
@@ -868,6 +958,10 @@ document.addEventListener("click",ev=>{
   if(t.id==="bkexp"){exportBackup();return;}
   if(t.id==="bkimp"){const f=$("#impfile");f.value="";f.click();return;}
   if(t.id==="bkundo"){undoImport();return;}
+  if(t.id==="bkcopy"){copyBackup();return;}
+  if(t.id==="bkpaste"){if(ui.bkpaste&&$("#bkpastebox")&&!$("#bkpastebox").hidden)closePasteBox();else openPasteBox();return;}
+  if(t.id==="bkpastecancel"){closePasteBox();return;}
+  if(t.id==="bkpasteok"){const ta=$("#bktext");if(!ta)return;if(importBackupText(ta.value))closePasteBox();else ta.focus();return;}
   if(t.dataset.tab){ui.tab=t.dataset.tab;render();scrollTo(0,0);return;}
   if(t.dataset.day){ui.day=+t.dataset.day;ui.open=null;render();return;}
   if(t.id==="finish")return finish();
