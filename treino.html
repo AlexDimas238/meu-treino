@@ -1273,8 +1273,8 @@ document.addEventListener("click",ev=>{
   const key=card.dataset.key,i=+card.dataset.i,day=ui.day,it=item(day,i);
   if(t.dataset.act==="toggle"){ui.open=ui.open===key?null:key;ui.swap=null;rerenderCard(card,day,it,i);return;}
   if(t.dataset.act==="rest"){state.rest[it.id]=Math.max(15,Math.min(600,restOf(it)+(+t.dataset.d)));save();rerenderCard(card,day,it,i);return;}
-  if(t.dataset.act==="swap"){ui.swap=ui.swap===key?null:key;rerenderCard(card,day,it,i);return;}
-  if(t.dataset.act==="pick"){const id=t.dataset.id;ui.swap=null;if(id){const orig=DAYS[day-1].items[i].id;if(id===orig)delete state.swaps[swapKey(day,i)];else state.swaps[swapKey(day,i)]=id;ui.open=id+"#"+i;save();}render();return;}
+  if(t.dataset.act==="swap"){ui.swap=ui.swap===key?null:key;rerenderCard(card,day,it,i);if(ui.swap)revealSwap(i);return;}
+  if(t.dataset.act==="pick"){const id=t.dataset.id;ui.swap=null;if(id){const orig=DAYS[day-1].items[i].id;if(id===orig)delete state.swaps[swapKey(day,i)];else state.swaps[swapKey(day,i)]=id;ui.open=id+"#"+i;save();}const y=scrollY;render();scrollTo(0,y);revealCard(i);return;}
   if(t.dataset.act==="done"){
     const row=t.closest(".set"),k=+row.dataset.k;
     const s=ensureSession(day);const arr=s.sets[key]||(s.sets[key]=[]);
@@ -1325,6 +1325,19 @@ document.addEventListener("change",ev=>{
 });
 function rerenderCard(el,day,it,i){
   const tmp=document.createElement("div");tmp.innerHTML=cardHTML(day,it,i);el.replaceWith(tmp.firstElementChild);
+}
+/* No celular o painel de troca abre abaixo do botão, muitas vezes atrás da barra de abas ou fora da tela
+   (ainda mais quando o teclado acabou de fechar e a página se moveu): rola só o necessário para mostrá-lo inteiro */
+function revealSwap(i){
+  const f=()=>{const p=document.querySelector(`.ex[data-i="${i}"] .swap`);if(!p)return;
+    const r=p.getBoundingClientRect(),nav=$("nav.tabs"),lim=innerHeight-(nav?nav.getBoundingClientRect().height:0)-8;
+    if(r.bottom>lim)scrollBy({top:Math.min(r.bottom-lim,Math.max(0,r.top-8)),behavior:"smooth"});};
+  requestAnimationFrame(f);setTimeout(f,450);
+}
+/* Depois de escolher o substituto, garante que o cabeçalho do card (com o novo exercício) esteja na tela */
+function revealCard(i){
+  const c=document.querySelector(`.ex[data-i="${i}"]`);if(!c)return;
+  const r=c.getBoundingClientRect();if(r.top<0||r.top>innerHeight-120)c.scrollIntoView({block:"start",behavior:"smooth"});
 }
 function updateTop(day){
   const plan=DAYS[day-1];const total=plan.items.reduce((a,it)=>a+it.s,0);
