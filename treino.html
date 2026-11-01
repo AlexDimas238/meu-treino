@@ -178,6 +178,7 @@ nav.tabs button.sel svg{color:var(--accent)}
 .gcard .chip[aria-pressed="true"]{background:var(--accent);color:var(--accent-ink)}
 .gcard details{margin:6px 10px 0;font-size:.85rem;color:var(--muted)}
 .gcard table{width:100%;border-collapse:collapse;margin-top:4px}.gcard td{padding:2px 0;border-top:1px solid var(--line)}.gcard td:last-child{text-align:right}
+.bkcard .prow .btn{flex:1 1 150px}
 @media (prefers-reduced-motion:reduce){*{transition:none!important}.cta,.cta .btn{animation:none!important}}
 </style>
 </head>
@@ -196,6 +197,7 @@ nav.tabs button.sel svg{color:var(--accent)}
   <button type="button" data-tab="historico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/></svg>Histórico</button>
 </div></nav>
 <div class="toast" id="toast"></div>
+<input type="file" id="impfile" accept="application/json,.json" hidden aria-hidden="true" tabindex="-1">
 
 <script>
 /* ===== Ilustrações animadas ===== */
@@ -722,7 +724,7 @@ function renderHome(){
   ${ses?`<div class="bar" aria-label="Séries concluídas"><i style="width:${total?done/total*100:0}%"></i></div><p style="font-size:.88rem">${done} de ${total} séries feitas</p>`:""}
   <button type="button" class="btn" id="homestart">${ses?"Continuar treino":"Iniciar treino"} · Dia ${nd}</button></section>`;
   const H=state.history;
-  if(!H.length){h+=`<p class="empty">Seus indicadores aparecem após o primeiro treino.</p>`;$("#app").innerHTML=h;setSync();return;}
+  if(!H.length){h+=`<p class="empty">Seus indicadores aparecem após o primeiro treino.</p>`+backupHTML();$("#app").innerHTML=h;setSync();return;}
   const now=Date.now(),mine=H.filter(x=>(x.prog||"fullbody6")===state.activeProgram);
   const week=mine.filter(x=>now-x.date<7*864e5).length;
   const weeks=new Set(H.map(x=>weekStart(x.date)));let w0=weekStart(now);if(!weeks.has(w0))w0-=7*864e5;
@@ -750,7 +752,89 @@ function renderHome(){
     h+=`<div class="gcard"><h4>Evolução de carga</h4><div class="groups">${ids.map(x=>`<button type="button" class="chip" data-hx="${x.id}" aria-pressed="${x===sel}">${esc(EX[x.id].n.replace(/ com Halter.*$/,""))}</button>`).join("")}</div>
      ${chartSVG(sel.id)}<p class="hint">${esc(EX[sel.id].n)}: de ${p[0].w} para ${p[p.length-1].w} kg.</p></div>`;
   }else h+=`<p class="hint">A evolução de carga aparece quando um exercício tiver dois treinos registrados.</p>`;
+  h+=backupHTML();
   $("#app").innerHTML=h;setSync();
+}
+/* ===== Backup: exportar e importar os dados ===== */
+const LS_UNDO=LS+"-antes-importar";
+function hasUndo(){try{return !!localStorage.getItem(LS_UNDO);}catch(e){return false;}}
+function backupHTML(){
+  const n=state.history.length,p=state.programs.length;
+  return `<h3 class="sec display">Backup</h3><div class="pcard bkcard"><h4>Seus dados ficam só neste aparelho</h4>
+  <p class="d2">Exporte um arquivo com ${n} ${n===1?"treino":"treinos"} no histórico, ${p} ${p===1?"programa seu":"programas seus"}, cargas e ajustes. Faça isso antes de trocar de celular, navegador ou endereço do app.</p>
+  <div class="prow"><button type="button" class="btn" id="bkexp">Exportar backup</button><button type="button" class="btn ghost" id="bkimp">Importar backup</button>${hasUndo()?'<button type="button" class="btn ghost" id="bkundo">Desfazer importação</button>':""}</div></div>`;
+}
+function backupName(){const d=new Date();return "meu-treino-backup-"+d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0")+".json";}
+async function exportBackup(){
+  const name=backupName();
+  const json=JSON.stringify({app:"meu-treino",version:1,exportedAt:new Date().toISOString(),state},null,2);
+  const blob=new Blob([json],{type:"application/json"});
+  /* No celular, usa a folha de compartilhamento quando ela aceita arquivos; o download fica como alternativa */
+  const mobile=window.matchMedia&&matchMedia("(pointer:coarse)").matches;
+  if(mobile&&navigator.share&&navigator.canShare){
+    try{
+      const file=new File([blob],name,{type:"application/json"});
+      if(navigator.canShare({files:[file]})){await navigator.share({files:[file],title:"Backup do Meu treino"});toast("Backup compartilhado");return;}
+    }catch(e){if(e&&e.name==="AbortError")return;}
+  }
+  const url=URL.createObjectURL(blob);
+  const a=document.createElement("a");a.href=url;a.download=name;a.rel="noopener";document.body.appendChild(a);a.click();a.remove();
+  setTimeout(()=>URL.revokeObjectURL(url),2000);
+  toast("Backup exportado");
+}
+function readFileText(file){
+  return new Promise((res,rej)=>{const r=new FileReader();r.onload=()=>res(String(r.result||""));r.onerror=()=>rej(new Error("Não foi possível ler o arquivo."));r.readAsText(file);});
+}
+/* Aceita o envelope { app, version, state } ou o state cru do localStorage. Lança erro com mensagem em pt-BR. */
+function parseBackup(text){
+  let data;
+  try{data=JSON.parse(text);}catch(e){throw new Error("O arquivo não é um JSON válido.");}
+  const isObj=o=>o&&typeof o==="object"&&!Array.isArray(o);
+  if(!isObj(data))throw new Error("O arquivo não tem o formato de backup do Meu treino.");
+  let s=data;
+  if("app" in data||"state" in data){
+    if(data.app!==undefined&&data.app!=="meu-treino")throw new Error("Este backup é de outro aplicativo ("+String(data.app)+").");
+    s=data.state;
+  }
+  if(!isObj(s))throw new Error("O arquivo não tem o formato de backup do Meu treino.");
+  if(!("history" in s)&&!("weights" in s)&&!("programs" in s))throw new Error("O arquivo não tem os dados esperados (histórico, cargas ou programas).");
+  if(s.history!==undefined&&!Array.isArray(s.history))throw new Error("O histórico do arquivo está em formato inválido.");
+  if(s.programs!==undefined&&!Array.isArray(s.programs))throw new Error("Os programas do arquivo estão em formato inválido.");
+  if(s.weights!==undefined&&!isObj(s.weights))throw new Error("As cargas do arquivo estão em formato inválido.");
+  const copy=JSON.parse(JSON.stringify(s));
+  copy.history=(copy.history||[]).filter(x=>isObj(x)&&Array.isArray(x.ex));
+  copy.programs=(copy.programs||[]).filter(x=>isObj(x)&&x.id&&Array.isArray(x.days));
+  return copy;
+}
+function replaceState(s){
+  state={weights:{...START_W},session:null,history:[],rest:{},swaps:{},lastReps:{},programs:[],activeProgram:"fullbody6",draft:null,updatedAt:0,...s};
+  normState();applyProgram();
+  ui={tab:"inicio",day:null,open:null};
+  stopTimer();save();render();scrollTo(0,0);
+}
+async function importBackup(file){
+  if(!file)return;
+  try{
+    const s=parseBackup(await readFileText(file));
+    const nh=s.history.length,np=s.programs.length;
+    const when=s.updatedAt?new Date(s.updatedAt).toLocaleString("pt-BR",{day:"2-digit",month:"2-digit",year:"numeric",hour:"2-digit",minute:"2-digit"}):"";
+    const msg=`Importar este backup?\n\nEle tem ${nh} ${nh===1?"treino":"treinos"} no histórico e ${np} ${np===1?"programa seu":"programas seus"}${when?", salvo em "+when:""}.\n\nTodo o conteúdo atual deste aparelho (histórico, cargas, programas e treino em andamento) será substituído. Uma cópia do estado atual fica guardada para você desfazer.`;
+    if(!confirm(msg))return;
+    try{localStorage.setItem(LS_UNDO,JSON.stringify(state));}catch(e){}
+    replaceState(s);
+    toast(`Backup importado: ${nh} ${nh===1?"treino":"treinos"}`);
+  }catch(e){
+    alert("Não foi possível importar o backup.\n\n"+(e&&e.message?e.message:"Erro desconhecido.")+"\n\nNada foi alterado.");
+  }
+}
+function undoImport(){
+  let prev=null;
+  try{prev=JSON.parse(localStorage.getItem(LS_UNDO)||"null");}catch(e){}
+  if(!prev||typeof prev!=="object"){toast("Não há importação para desfazer");try{localStorage.removeItem(LS_UNDO);}catch(e){}render();return;}
+  if(!confirm("Desfazer a última importação e voltar aos dados que existiam antes dela?\n\nO que foi importado será descartado."))return;
+  try{localStorage.removeItem(LS_UNDO);}catch(e){}
+  replaceState(prev);
+  toast("Importação desfeita");
 }
 function renderHistory(){
   let h=`<header class="top"><h1 class="display">Histórico</h1><div class="sync" id="sync"></div></header>`;
@@ -781,6 +865,9 @@ document.addEventListener("click",ev=>{
   if(t.dataset.b)return builderClick(t);
   if(t.id==="homestart"){ui.tab="treino";ui.day=nextDay();ui.open=null;render();scrollTo(0,0);return;}
   if(t.dataset.hx){ui.homeEx=t.dataset.hx;render();return;}
+  if(t.id==="bkexp"){exportBackup();return;}
+  if(t.id==="bkimp"){const f=$("#impfile");f.value="";f.click();return;}
+  if(t.id==="bkundo"){undoImport();return;}
   if(t.dataset.tab){ui.tab=t.dataset.tab;render();scrollTo(0,0);return;}
   if(t.dataset.day){ui.day=+t.dataset.day;ui.open=null;render();return;}
   if(t.id==="finish")return finish();
@@ -887,6 +974,7 @@ document.addEventListener("visibilitychange",()=>{
 });
 $("#tplus").onclick=()=>{tEnd=Math.max(tEnd,Date.now())+15000;$("#timer").classList.remove("end");clearInterval(tInt);tick();tInt=setInterval(tick,250);};
 $("#tskip").onclick=stopTimer;
+$("#impfile").addEventListener("change",ev=>{const f=ev.target.files&&ev.target.files[0];importBackup(f).finally(()=>{ev.target.value="";});});
 function toast(m){const t=$("#toast");t.textContent=m;t.classList.add("on");setTimeout(()=>t.classList.remove("on"),2600);}
 
 render();
