@@ -713,13 +713,14 @@ function renderHome(){
   const items=plan.items.map((_,i)=>item(nd,i));
   const total=plan.items.reduce((a,it)=>a+it.s,0),mins=Math.max(5,Math.round(total*3.25/5)*5);
   const done=ses?plan.items.reduce((a,_,i)=>a+exProgress(nd,item(nd,i),i),0):0;
-  const lbl=plan.extra&&plan.extra!==String(nd)?" ("+esc(plan.extra)+")":"";
+  const prog=findProg(state.activeProgram),pname=prog?prog.name.replace(/\s*\(atual\)\s*$/,""):"";
+  const foco=plan.extra&&plan.extra!==String(nd)?" · foco extra: "+esc(plan.extra):"";
   let h=`<header class="top"><h1 class="display">Meu treino</h1><div class="sync" id="sync"></div></header>
-  <section class="cta"><p>${ses?"Treino em andamento":"Seu próximo treino"}</p><h2 class="display">Dia ${nd}${lbl}</h2>
-  <p>${plan.items.length} exercícios, cerca de ${mins} min.</p>
+  <section class="cta"><p>${ses?"Treino em andamento":"Seu próximo treino"}</p><h2 class="display">${esc(pname)||"Treino"}</h2>
+  <p>Dia ${nd} de ${DAYS.length}${foco}. ${plan.items.length} exercícios, cerca de ${mins} min.</p>
   <div class="groups">${groupsOf(items).map(g=>`<span class="chip"><b style="background:var(--${g})"></b>${G[g]}</span>`).join("")}</div>
   ${ses?`<div class="bar" aria-label="Séries concluídas"><i style="width:${total?done/total*100:0}%"></i></div><p style="font-size:.88rem">${done} de ${total} séries feitas</p>`:""}
-  <button type="button" class="btn" id="homestart">${ses?"Continuar treino":"Iniciar treino"} · Dia ${nd}${lbl}</button></section>`;
+  <button type="button" class="btn" id="homestart">${ses?"Continuar treino":"Iniciar treino"} · Dia ${nd}</button></section>`;
   const H=state.history;
   if(!H.length){h+=`<p class="empty">Seus indicadores aparecem após o primeiro treino.</p>`;$("#app").innerHTML=h;setSync();return;}
   const now=Date.now(),mine=H.filter(x=>(x.prog||"fullbody6")===state.activeProgram);
