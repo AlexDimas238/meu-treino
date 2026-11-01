@@ -33,6 +33,20 @@ Na aba **Treino**, no fim da página (depois do botão **Concluir treino**), há
 
 Faça o backup **antes de trocar de celular, de navegador ou de endereço do app**: os dados não acompanham você automaticamente, pois ficam presos ao navegador e ao domínio em que o app foi aberto.
 
+## Adicionar à tela de início
+
+O app pode virar um atalho com ícone próprio, aberto em tela cheia como um aplicativo:
+
+- **iPhone (Safari):** abra https://alexdimas238.github.io/meu-treino/treino.html, toque em **Compartilhar** (quadrado com seta) e em **Adicionar à Tela de Início**. O atalho aparece com o nome **Meu treino**.
+- **Android (Chrome):** abra o mesmo endereço, toque no menu (três pontos) e em **Adicionar à tela inicial** ou **Instalar app**.
+
+**Aviso importante (iPhone):** o app aberto pela tela de início roda separado do Safari e tem armazenamento próprio. Os treinos gravados no Safari **não aparecem automaticamente** no atalho. Para levar os dados, faça uma única vez:
+
+1. No Safari, abra o app e use **Copiar backup** (seção Backup, no fim da aba Treino).
+2. Abra o app pelo atalho da tela de início e use **Colar backup** → **Importar**.
+
+Depois disso, use sempre o atalho, para que histórico e cargas fiquem em um lugar só.
+
 ## Licença
 
 MIT
