@@ -58,6 +58,16 @@ O app pode virar um atalho com ícone próprio, aberto em tela cheia como um apl
 
 Depois disso, use sempre o atalho, para que histórico e cargas fiquem em um lugar só.
 
+## Publicar uma nova versão
+
+Antes de cada commit que altere o app, rode:
+
+```sh
+./scripts/bump-version.sh
+```
+
+O script grava a mesma versão (data e hora UTC) em `version.json` e na constante `APP_VERSION` do `treino.html`. O app consulta `version.json` ao abrir e ao voltar a ficar visível; se a versão mudou, salva os dados e recarrega sozinho (ou mostra "Nova versão disponível · Atualizar" se houver descanso rodando ou campo em edição).
+
 ## Créditos
 
 As fotos dos exercícios (`img/ex/`) vêm do [free-exercise-db](https://github.com/yuhonas/free-exercise-db), publicado em domínio público (Unlicense). Foram redimensionadas para 360 px de largura. A Elevação Pélvica continua com a ilustração desenhada, porque o banco só tem a versão com barra.

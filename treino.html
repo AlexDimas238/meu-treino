@@ -1560,6 +1560,44 @@ function toast(m){const t=$("#toast");t.textContent=m;t.classList.add("on");setT
 
 render();
 
+/* ===== Atualização automática =====
+   O app aberto pela tela de início fica suspenso e o Pages guarda cache. Ao abrir, ao voltar a ficar visível e no
+   pageshow vindo do cache, compara version.json com APP_VERSION. Se mudou, salva e recarrega com cache-busting.
+   Não recarrega com descanso rodando ou campo em edição: mostra um aviso com botão. */
+const APP_VERSION="20261102122927";
+let verLast=0,verNew=null;
+function busy(){
+  const t=$("#timer");if(t&&t.classList.contains("on")&&!t.classList.contains("end"))return true;
+  const a=document.activeElement;return !!(a&&(a.tagName==="INPUT"||a.tagName==="TEXTAREA"||a.tagName==="SELECT"||a.isContentEditable));
+}
+function goVersion(v){
+  try{const k="verTry",o=JSON.parse(sessionStorage.getItem(k)||"null");
+    if(o&&o.v===v&&Date.now()-o.t<300000)return false;   /* já tentou há menos de 5 min: cache da CDN */
+    sessionStorage.setItem(k,JSON.stringify({v,t:Date.now()}));}catch(e){}
+  try{save();}catch(e){}
+  location.replace(location.pathname+"?v="+encodeURIComponent(v));return true;
+}
+function verBar(v){
+  let b=$("#verbar");
+  if(!b){b=document.createElement("div");b.id="verbar";b.className="toast on";b.setAttribute("role","status");
+    b.innerHTML='Nova versão disponível · <button type="button" style="border:0;background:rgba(255,255,255,.25);color:inherit;font-weight:700;border-radius:8px;padding:4px 10px;margin-left:6px">Atualizar</button>';
+    b.querySelector("button").onclick=()=>{try{sessionStorage.removeItem("verTry");}catch(e){}goVersion(verNew||v);};
+    document.body.appendChild(b);}
+}
+async function checkVersion(force){
+  if(!force&&Date.now()-verLast<60000)return;verLast=Date.now();
+  try{
+    const r=await fetch("version.json?t="+Date.now(),{cache:"no-store"});if(!r.ok)return;
+    const v=String((await r.json()).v||"");if(!v||v===APP_VERSION)return;
+    verNew=v;
+    if(busy()){verBar(v);return;}
+    goVersion(v);
+  }catch(e){}                                            /* offline ou erro: ignora */
+}
+checkVersion(true);
+document.addEventListener("visibilitychange",()=>{if(document.visibilityState==="visible")checkVersion();});
+addEventListener("pageshow",e=>{if(e.persisted)checkVersion();});
+
 const RM=window.matchMedia&&matchMedia("(prefers-reduced-motion: reduce)").matches;
 /* Só o card aberto anima (miniaturas e demais cards ficam na pose de pico, igual ao modo de movimento reduzido);
    cerca de 30 quadros por segundo bastam e poupam bateria */
