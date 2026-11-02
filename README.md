@@ -7,7 +7,7 @@ App de treino de academia que roda no navegador. Os dados ficam salvos no própr
 
 ## Recursos
 
-- Treinos separados por dia, com animação de cada exercício
+- Treinos separados por dia, com animação de cada exercício: boneco com o músculo trabalhado destacado, ciclo de execução controlado (subida, pausa, descida) e marcações de postura (coluna neutra, articulação que fica fixa, direção do esforço), além de dicas de postura e chips de músculo principal e secundários no card
 - Cargas e repetições salvas por exercício, válidas em todos os dias
 - Temporizador de descanso com aviso ao fim
 - Histórico de sessões com evolução de carga
