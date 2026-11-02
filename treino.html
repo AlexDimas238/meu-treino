@@ -71,6 +71,14 @@ header.top h1{margin:0;font-size:2.4rem;line-height:1;font-weight:800}
 .exh .info{flex:1;min-width:0}
 .thumb{flex:none;width:68px;height:62px;border-radius:12px;background:var(--surface2);overflow:hidden}
 .thumb svg,.big svg{display:block;width:100%;height:100%}
+.ph{position:relative;display:block;width:100%;height:100%;overflow:hidden;border-radius:inherit;background:#fff}
+.ph img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block}
+.big .ph img{object-fit:contain}
+.ph .p1{opacity:1}.big .ph .p0{opacity:1}.big .ph .p1{opacity:0}
+.ex.open .big .ph .p1{animation:phx 3.3s ease-in-out infinite}
+@keyframes phx{0%,39.4%{opacity:0}54.5%,84.8%{opacity:1}100%{opacity:0}}
+.credito{font-size:11px;color:var(--muted,#888);text-align:center;margin:-150px 16px 150px;position:relative}
+.credito a{color:inherit}
 .big{background:var(--surface2);border-radius:12px;aspect-ratio:160/136;max-height:260px;margin:0 auto 12px;width:100%}
 .exh .name{font-weight:600;font-size:1.05rem;line-height:1.2}
 .exh .meta{font-size:.88rem;color:var(--muted);margin-top:3px;display:flex;flex-wrap:wrap;gap:4px 10px;align-items:center}
@@ -249,11 +257,12 @@ nav.tabs button.sel svg{color:var(--accent)}
 .warnbox{margin-top:10px;padding:10px 12px;border-radius:12px;background:color-mix(in srgb,var(--warn) 14%,var(--surface));color:var(--ink);font-size:.9rem}
 .mascote .breathe{transform-origin:50px 112px;animation:breathe 3.2s ease-in-out infinite}
 @keyframes breathe{0%,100%{transform:scaleY(1)}50%{transform:scaleY(1.02)}}
-@media (prefers-reduced-motion:reduce){*{transition:none!important}.cta,.cta .btn,.mascote .breathe{animation:none!important}}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}.ex.open .big .ph .p1{animation:none!important;opacity:1}.cta,.cta .btn,.mascote .breathe{animation:none!important}}
 </style>
 </head>
 <body>
 <div class="wrap" id="app"></div>
+<p class="credito">Fotos dos exercícios: <a href="https://github.com/yuhonas/free-exercise-db" target="_blank" rel="noopener">free-exercise-db</a>, domínio público</p>
 <div class="timer" id="timer" aria-live="polite">
   <div class="tt" id="tt">0:00</div>
   <div class="tl" id="tl">Descanso</div>
@@ -485,6 +494,13 @@ function poseAt(f,e){
   if(!f._a){f._a=absPose(f.A);f._b=absPose({...f.A,...f.B});}
   return lerpPose(f._a,f._b,e);
 }
+/* Exercícios com foto real (free-exercise-db, domínio público): img/ex/<id>-0.jpg = início, -1.jpg = fim */
+const PH=new Set(["supino_reto", "supino_reto_neutra", "supino_incl", "supino_incl_neutra", "crucifixo", "crucifixo_incl", "flexao", "puxada_romana", "puxada_triangulo", "remada_unil", "remada_curvada", "remada_tri_sentada", "barra_fixa", "rosca_direta", "rosca_alternada", "rosca_martelo", "rosca_inclinada", "rosca_concentrada", "triceps_frances", "triceps_frances_unil", "triceps_testa", "triceps_coice", "triceps_corda", "desenv_sentado", "arnold", "elev_lateral", "elev_posterior", "goblet", "stiff", "bulgaro", "afundo", "mesa_flexora"]);
+function phHTML(id,big,nome){
+  const a=nome?esc(nome):"";
+  if(!big)return `<span class="ph"><img class="p1" src="img/ex/${id}-1.jpg" alt="" loading="lazy" decoding="async"></span>`;
+  return `<span class="ph" role="img" aria-label="Foto do exercício ${a}: início e fim do movimento"><img class="p0" src="img/ex/${id}-0.jpg" alt="${a}, posição inicial" loading="lazy" decoding="async"><img class="p1" src="img/ex/${id}-1.jpg" alt="${a}, posição final" loading="lazy" decoding="async"></span>`;
+}
 function figSVG(id,k){
   const f=FIG[id];if(!f)return "";
   const ph=phase(k),P=poseAt(f,ph.e),front=f.v==="front";
@@ -538,7 +554,7 @@ const FIG={
   stiff:{v:"side",hold:"db",spine:true,arrow:"S",ao:[0,-12],A:{hip:[64,86],t:108,hd:4,F:[1,1],foot:[84,127],fb:-1,hand:["r",-6,35],hb:1},B:{hip:[80,78],t:180,F:[1,0],hand:["r",2,35]}},
   bulgaro:{v:"side",hold:"dbh",hold2:"dbh",arrow:"hip",ao:[-14,0],eq:EQ.flat(14,50,98),A:{hip:[70,100],t:176,F:[1,.2],foot:[96,127],fb:-1,foot2:[40,94],fb2:-1,hand:["r",3,36],hb:1,hand2:["r",-3,36],hb2:1},B:{hip:[74,78],t:180}},
   afundo:{v:"side",hold:"dbh",hold2:"dbh",arrow:"hip",ao:[-14,0],A:{hip:[78,102],t:180,F:[1,0],foot:[104,127],fb:-1,foot2:[50,127],fb2:-1,hand:["r",3,36],hb:1,hand2:["r",-3,36],hb2:1},B:{hip:[78,78]}},
-  elev_pelvica:{v:"side",hold:"db",arrow:"hip",ao:[0,-14],eq:EQ.pad(10,44,99,6)+`<path d="M12 105V${FL}M42 105V${FL}" stroke="${MU}" stroke-opacity=".55" stroke-width="3" stroke-linecap="round" fill="none"/>`,fn:e=>{const S=[38,93],t=lerp(236,270,e),hip=add(S,dir(t),-34);return {hip,t,hd:-28,F:[.3,-1],foot:[98,127],fb:-1,foot2:[104,127],fb2:-1,hand:["hip",2,-8],hb:-1};}},
+  elev_pelvica:{v:"side",hold:"db",arrow:"hip",ao:[0,-14],eq:EQ.pad(10,44,99,6)+`<path d="M12 105V${FL}M42 105V${FL}" stroke="${MU}" stroke-opacity=".55" stroke-width="3" stroke-linecap="round" fill="none"/>`,fn:e=>{const S=[38,93],t=lerp(236,270,e),hip=add(S,dir(t),-34);return {hip,t,hd:-28,F:[.3,-1],foot:[98,127],fb:-1,foot2:[104,127],fb2:-1,hand:["hip",2,-8],hb:1};}},
   mesa_flexora:{v:"side",hold:"",arrow:"A",eq:EQ.flat(22,120,100),eqf:J=>{const u=nrm(sub(J.A,J.K)),p=add(J.A,u,4);return C(p,4.2,LN)+C(p,4.2,"none",` stroke="${MU}" stroke-width="1.4"`);},A:{hip:[64,94],t:90,hd:-10,F:[0,1],foot:[14,96],fb:-1,ft:-6,hand:[114,106],hb:-1},B:{foot:[44,70]}}
 };
 
@@ -739,13 +755,13 @@ function cardHTML(day,it,i){
   return `<article class="ex${cls}${open?" open":""}" data-key="${key}" data-i="${i}">
    <button type="button" class="exh" data-act="toggle" aria-expanded="${open}">
     <span class="ring">${p}/${it.s}</span>
-    <span class="thumb"><svg class="fig" data-fig="${it.id}" viewBox="0 0 160 136" aria-hidden="true">${figSVG(it.id,KPEAK)}</svg></span>
+    <span class="thumb">${PH.has(it.id)?phHTML(it.id,0):`<svg class="fig" data-fig="${it.id}" viewBox="0 0 160 136" aria-hidden="true">${figSVG(it.id,KPEAK)}</svg>`}</span>
     <span class="info"><span class="name">${esc(e.n)}</span>
      <span class="meta"><span class="grp"><b style="background:var(--${e.g})"></b>${G[e.g]}</span><span>${it.s}x ${esc(it.r)}${w!=null||lr!=null?" | "+[w!=null?w+" kg":"",lr!=null?lr+" reps":""].filter(Boolean).join(" · "):""}</span>${it.m?'<span class="tag">Pesado</span>':""}</span></span>
     <svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M6 9l6 6 6-6"/></svg>
    </button>
    <div class="exb">
-    <div class="big"><svg class="fig" data-fig="${it.id}" viewBox="0 0 160 136" role="img" aria-label="Animação do exercício ${esc(e.n)}">${figSVG(it.id,KPEAK)}</svg></div>
+    <div class="big">${PH.has(it.id)?phHTML(it.id,1,e.n):`<svg class="fig" data-fig="${it.id}" viewBox="0 0 160 136" role="img" aria-label="Animação do exercício ${esc(e.n)}">${figSVG(it.id,KPEAK)}</svg>`}</div>
     ${muscHTML(e)}
     <details class="how" open><summary>Como fazer<svg class="sch" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg></summary>
      <ol>${e.c.map(c=>`<li>${esc(c)}</li>`).join("")}</ol>

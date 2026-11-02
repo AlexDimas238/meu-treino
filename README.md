@@ -58,6 +58,10 @@ O app pode virar um atalho com ícone próprio, aberto em tela cheia como um apl
 
 Depois disso, use sempre o atalho, para que histórico e cargas fiquem em um lugar só.
 
+## Créditos
+
+As fotos dos exercícios (`img/ex/`) vêm do [free-exercise-db](https://github.com/yuhonas/free-exercise-db), publicado em domínio público (Unlicense). Foram redimensionadas para 360 px de largura. A Elevação Pélvica continua com a ilustração desenhada, porque o banco só tem a versão com barra.
+
 ## Licença
 
 MIT
