@@ -13,7 +13,8 @@ App de treino de academia que roda no navegador. Os dados ficam salvos no própr
 - Histórico de sessões com evolução de carga
 - Modelos prontos: Full body, ABC, ABCD, Upper/Lower e Push/Pull/Legs
 - Montador de treino personalizado
-- Contador de calorias: perfil, gasto estimado por treino, refeições do dia e saldo, com um mascote que reage à semana
+- Treino totalmente editável, catálogo com porções musculares e mapa anatômico, exercícios personalizados
+- Funciona offline (service worker)
 
 ## Como usar localmente
 
@@ -34,15 +35,24 @@ Na aba **Treino**, no fim da página (depois do botão **Concluir treino**), há
 
 Faça o backup **antes de trocar de celular, de navegador ou de endereço do app**: os dados não acompanham você automaticamente, pois ficam presos ao navegador e ao domínio em que o app foi aberto.
 
-## Calorias
+## Editar o treino
 
-A aba **Calorias** junta o que você come com o que gasta no dia e no treino:
+Tudo no treino é editável e o histórico nunca é alterado por isso:
 
-- **Perfil** (card "Seu perfil"): sexo, peso, altura, idade e nível de atividade no resto do dia. O app calcula a taxa metabólica basal por Mifflin-St Jeor e multiplica pelo fator de atividade para chegar ao gasto diário. O treino de musculação é somado à parte, então escolha o nível pensando no resto do dia. Dá para informar também o objetivo (manter, perder peso ou ganhar massa).
-- **Calorias do treino**: estimadas por MET, `kcal = MET × peso (kg) × minutos ÷ 60`, com MET 5 por padrão (ajustável de 3 a 8 no perfil: 3,5 leve, 5 moderado/vigoroso, 6+ intenso com pouco descanso). O valor é gravado em cada treino ao concluir; treinos antigos usam o peso atual. No **Início**, o card "Calorias por treino" mostra média, total da semana e a evolução treino a treino.
-- **Alimentos**: navegue pelos dias com ‹ ›, digite o nome e escolha na tabela embutida de alimentos comuns (kcal por 100 g), informe as gramas e toque em **Adicionar**; ou lance direto nome + kcal. Os últimos alimentos ficam como atalhos de um toque.
-- **Saldo**: o card do topo mostra consumido, gasto (gasto diário + treinos daquele dia) e o saldo em **Déficit** (verde), **Superávit** (laranja) ou **Equilíbrio** (diferença menor que 50 kcal), além do resumo dos últimos 7 dias.
-- **Mascote**: ao lado do saldo, um personagem fica mais magro, mais forte ou mais largo conforme o saldo médio da semana e a frequência de treino (Secando com músculo, Perdendo peso mas pouca musculação, Ganhando massa, Acumulando gordura ou Manutenção), com uma frase curta de orientação que leva em conta o seu objetivo.
+- Aba **Treino**: o exercício atual fica aberto e em destaque (**Agora**), com **Registrar série** em um toque, descanso com contagem e barra de progresso e o próximo exercício indicado. As edições (**− série / + série**, repetições alvo, descanso, **↑ Subir / ↓ Descer**, **Pesado**, **Trocar exercício** e **Remover**) ficam no menu **⋯** do card. No fim do dia, **+ Adicionar exercício a este dia**.
+- **Escolher exercício pelo corpo**: ao adicionar ou trocar, toque num músculo do mapa (frente/costas, corpo masculino ou feminino). O grupo acende, as porções aparecem como botões e a lista mostra os exercícios com a ativação primária (●●●) e secundária (●○○). Tocar num exercício abre a prévia com o mapa, os passos e a fonte; **Adicionar ao treino** confirma. A busca por texto continua disponível.
+- Na aba **Montar**, o editor tem passos (1 nome e dias, 2 exercícios por dia em abas, 3 salvar) e a barra fixa **Cancelar / Salvar / Salvar e usar**; a ordem muda com ↑↓ ou arrastando pelo número. Criar treino do zero, editar (renomear, dias, séries, repetições, carga, descanso, ordem), duplicar e excluir. Os modelos prontos viram uma cópia editável em **Meus treinos** ao tocar em **Usar**.
+- Cada registro do histórico guarda o nome do exercício, a categoria, o programa e as séries feitas no momento do registro, então editar ou excluir treinos e exercícios não muda o que já foi registrado.
+
+## Catálogo de exercícios
+
+Mais de 130 exercícios em Peito, Costas, Ombros, Bíceps, Tríceps, Pernas, Abdômen e Antebraço, cada um com as porções musculares ativadas (primárias e secundárias), equipamento e uma fonte curta (estudos de EMG ou revisão). O seletor filtra por categoria, porção e busca. O detalhe mostra um mapa muscular (frente e costas) com a porção primária em cor forte e a secundária em cor clara.
+
+**Exercício personalizado** (Montar → Meus exercícios, ou no seletor): nome ou aparelho, equipamento, categoria, porções (toque para primário, de novo para secundário) e observações. Dá para editar e excluir; ao excluir, ele sai dos treinos, mas continua no histórico.
+
+## Offline
+
+O `sw.js` guarda o app, os ícones e as fotos no aparelho na primeira visita; depois disso tudo funciona sem internet. Com rede, o app consulta `version.json` e, se houver versão nova, atualiza o cache em segundo plano antes de recarregar. Sem rede, a checagem falha em silêncio.
 
 ## Adicionar à tela de início
 
@@ -66,11 +76,11 @@ Antes de cada commit que altere o app, rode:
 ./scripts/bump-version.sh
 ```
 
-O script grava a mesma versão (data e hora UTC) em `version.json` e na constante `APP_VERSION` do `treino.html`. O app consulta `version.json` ao abrir e ao voltar a ficar visível; se a versão mudou, salva os dados e recarrega sozinho (ou mostra "Nova versão disponível · Atualizar" se houver descanso rodando ou campo em edição).
+O script grava a mesma versão (data e hora UTC) em `version.json`, na constante `APP_VERSION` do `treino.html` e em `VERSION` do `sw.js`. O app consulta `version.json` ao abrir e ao voltar a ficar visível; se a versão mudou, salva os dados e recarrega sozinho (ou mostra "Nova versão disponível · Atualizar" se houver descanso rodando ou campo em edição).
 
 ## Créditos
 
-As fotos dos exercícios (`img/ex/`) vêm do [free-exercise-db](https://github.com/yuhonas/free-exercise-db), publicado em domínio público (Unlicense). Foram redimensionadas para 360 px de largura. A Elevação Pélvica continua com a ilustração desenhada, porque o banco só tem a versão com barra.
+As fotos dos exercícios (`img/ex/`) vêm do [free-exercise-db](https://github.com/yuhonas/free-exercise-db), publicado em domínio público (Unlicense). São 126 exercícios com foto de início e fim do movimento, redimensionadas para 360 px de largura. Os exercícios sem equivalente fiel na base (como a Elevação Pélvica com halter, o Crossover na polia média e a Remada Baixa com pegada aberta) seguem com o ícone e o mapa muscular.
 
 ## Licença
 
