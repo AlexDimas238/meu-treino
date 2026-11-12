@@ -46,7 +46,7 @@ Tudo no treino é editável e o histórico nunca é alterado por isso:
 
 ## Catálogo de exercícios
 
-Mais de 130 exercícios em Peito, Costas, Ombros, Bíceps, Tríceps, Pernas, Abdômen e Antebraço, cada um com as porções musculares ativadas (primárias e secundárias), equipamento e uma fonte curta (estudos de EMG ou revisão). O seletor filtra por categoria, porção e busca. O detalhe mostra um mapa muscular (frente e costas) com a porção primária em cor forte e a secundária em cor clara.
+Mais de 130 exercícios em Peito, Costas, Ombros, Bíceps, Tríceps, Pernas, Abdômen e Antebraço, cada um com as porções musculares ativadas (primárias e secundárias), equipamento e uma fonte curta (estudos de EMG ou revisão). O seletor filtra por categoria, porção e busca. O detalhe mostra um mapa muscular (frente e costas) em estilo de atlas anatômico: corpo cinza claro, porção primária em vermelho vivo e secundária em vermelho claro.
 
 **Exercício personalizado** (Montar → Meus exercícios, ou no seletor): nome ou aparelho, equipamento, categoria, porções (toque para primário, de novo para secundário) e observações. Dá para editar e excluir; ao excluir, ele sai dos treinos, mas continua no histórico.
 
