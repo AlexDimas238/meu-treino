@@ -4,7 +4,7 @@
    - version.json: sempre da rede (é o que o app usa para saber se há versão nova); offline, falha e o app ignora.
    - Mensagem "refresh": rebaixa os arquivos do app em segundo plano e avisa a página quando terminar.
    Caminhos relativos ao próprio sw.js, então funciona no GitHub Pages em subpasta. VERSION é gravada por scripts/bump-version.sh. */
-const VERSION="20261112193138";
+const VERSION="20261112194242";
 const CACHE="meu-treino-"+VERSION;
 const RUNTIME="meu-treino-runtime";
 const SHELL=["./","index.html","treino.html","humanoid.js","manifest.webmanifest","icons/favicon.svg","icons/apple-touch-icon.png","icons/icon-192.png","icons/icon-512.png","icons/icon-512-maskable.png"];
