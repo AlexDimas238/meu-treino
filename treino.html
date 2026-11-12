@@ -49,7 +49,7 @@
   --bgrad1:rgba(var(--gl),.10);--bgrad2:rgba(184,255,60,.06);
   --hd:var(--y-100);--kick:var(--y-300);--acct:var(--accent);--ring:var(--accent);--on-done:#0A1400;--sel:var(--neon);--pkg-g:var(--y-100),var(--y-500);
   --abdomen:#FF5A6E;--antebraco:#E0A86A;
-  --mm-p:var(--neon);--mm-s:rgba(247,166,0,.55);--mm-0:transparent;--body-fill:#18222F;--mm-fill:rgba(150,180,210,.12);--mm-line:rgba(150,200,240,.22);
+  --mm-p:#DC281C;--mm-s:#F4A093;--mm-ink:#fff;--mm-sink:#3A0B06;--mm-sel:#15181C;--mm-0:transparent;--body-fill:#18222F;--mm-fill:rgba(150,180,210,.12);--mm-line:rgba(150,200,240,.22);
   color-scheme:dark;
   box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);
 }
@@ -65,7 +65,7 @@
   --bgrad1:rgba(var(--gl),.16);--bgrad2:rgba(184,255,60,.08);
   --hd:#15181C;--kick:#7A4E00;--acct:#8A5A00;--ring:#8A5A00;--on-done:#fff;--sel:#15181C;--pkg-g:#15181C,#8A5A00;
   --abdomen:#D63048;--antebraco:#A8702E;
-  --mm-p:#FFB300;--mm-s:rgba(245,160,0,.5);--body-fill:#E4E8ED;--mm-fill:rgba(60,80,110,.08);--mm-line:rgba(60,80,110,.28);
+  --mm-p:#DC281C;--mm-s:#F4A093;--body-fill:#E4E8ED;--mm-fill:rgba(60,80,110,.08);--mm-line:rgba(60,80,110,.28);
   color-scheme:light;}
 @media (prefers-color-scheme:light){:root:not([data-theme="dark"]){
   --bg:#F1F2F4;--surface:rgba(255,255,255,.92);--surface2:#EEF0F3;--ink:#15181C;--muted:#566070;--line:#D3D8DF;
@@ -78,7 +78,7 @@
   --bgrad1:rgba(var(--gl),.16);--bgrad2:rgba(184,255,60,.08);
   --hd:#15181C;--kick:#7A4E00;--acct:#8A5A00;--ring:#8A5A00;--on-done:#fff;--sel:#15181C;--pkg-g:#15181C,#8A5A00;
   --abdomen:#D63048;--antebraco:#A8702E;
-  --mm-p:#FFB300;--mm-s:rgba(245,160,0,.5);--body-fill:#E4E8ED;--mm-fill:rgba(60,80,110,.08);--mm-line:rgba(60,80,110,.28);
+  --mm-p:#DC281C;--mm-s:#F4A093;--body-fill:#E4E8ED;--mm-fill:rgba(60,80,110,.08);--mm-line:rgba(60,80,110,.28);
   color-scheme:light;}}
 html{scroll-padding-top:env(safe-area-inset-top,0px)}
 *,*::before,*::after{box-sizing:border-box}
@@ -291,7 +291,7 @@ nav.tabs button.sel svg{color:var(--acct)}
 .cxf label{display:flex;flex-direction:column;gap:4px;font-size:.85rem;color:var(--muted)}
 .cxf input,.cxf select,.cxf textarea{width:100%;min-height:44px;border-radius:12px;border:1px solid var(--line);background:var(--surface2);padding:8px 12px;font-weight:600;color:var(--ink)}
 .cxg h5{margin:4px 0;font-size:.85rem}
-.cxf .chip.pc{white-space:normal;text-align:left;line-height:1.2;border-radius:14px}.cxf .chip.p{background:var(--mm-p);color:var(--accent-ink)}.cxf .chip.s{background:var(--mm-s);color:var(--ink)}
+.cxf .chip.pc{white-space:normal;text-align:left;line-height:1.2;border-radius:14px}.cxf .chip.p{background:var(--mm-p);color:var(--mm-ink)}.cxf .chip.s{background:var(--mm-s);color:var(--mm-sink)}
 body.noscroll{overflow:hidden}
 /* ===== Visual com acento amarelo: vidro sutil, brilho nos estados ativos (cores vêm dos tokens de tema acima) ===== */
 body{background:radial-gradient(900px 520px at 85% -10%,var(--bgrad1),transparent 60%),radial-gradient(700px 480px at -10% 30%,var(--bgrad2),transparent 60%),var(--bg);background-attachment:fixed}
@@ -342,30 +342,32 @@ body:not(.t-treino) .timer .tl,body:not(.t-treino) .timer button,body:not(.t-tre
 body:not(.t-treino) .timer .tt{font-size:1.5rem;min-width:0}
 .sr{position:absolute;width:1px;height:1px;margin:-1px;padding:0;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap;border:0}
 body.hasbar .credito{padding-bottom:calc(230px + env(safe-area-inset-bottom,0px))}
-/* ===== Mapa do corpo (fallback esquemático ou humanoid.js); estados definidos aqui ===== */
+/* ===== Mapa do corpo (fallback esquemático ou humanoid.js); estados definidos aqui =====
+   O corpo é cinza claro nos dois temas; só o destaque ganha cor: vermelho vivo (primário) e vermelho claro (secundário).
+   No mapa de progresso: amarelo = previsto, laranja = em andamento, vermelho = concluído. */
 .bmap{position:relative;min-width:0}
 .bmap svg{display:block;width:100%;height:auto;overflow:visible}
 .schem .mm-body{fill:var(--body-fill)}
 .schem .mm{fill:var(--mm-fill);stroke:var(--mm-line);stroke-width:.5}
 .bmap .mm{transition:fill .2s,fill-opacity .2s,filter .2s}
-.bmap .mm.on-p{fill:var(--mm-p);fill-opacity:1;filter:drop-shadow(0 0 2px var(--mm-p)) drop-shadow(0 0 7px var(--mm-p))}
-.bmap .mm.on-s{fill:var(--y-600);fill-opacity:.55;filter:drop-shadow(0 0 2px rgba(var(--gl),.45))}
-.bmap .mm.sel{stroke:var(--sel);stroke-width:1.6px;vector-effect:non-scaling-stroke;paint-order:stroke}
+.bmap .mm.on-p{fill:var(--mm-p);fill-opacity:1}
+.bmap .mm.on-s{fill:var(--mm-s);fill-opacity:1}
+.bmap .mm.sel{stroke:var(--mm-sel);stroke-width:2.4px;vector-effect:non-scaling-stroke;paint-order:stroke}
 .bmap.tap .mm{cursor:pointer}
 .bmap.tap .mm{outline:none}
-.bmap.tap .mm:hover{fill:var(--mm-p);fill-opacity:.3}
-.bmap.tap .mm:focus-visible{fill:var(--mm-p);stroke:var(--hd);stroke-width:2px;vector-effect:non-scaling-stroke;fill-opacity:.5}
-.bmap.tap .mm.on-p:hover,.bmap.tap .mm.on-p:focus-visible{fill-opacity:1}
+.bmap.tap .mm:hover{fill:var(--mm-s);fill-opacity:.6}
+.bmap.tap .mm:focus-visible{fill:var(--mm-s);stroke:var(--mm-sel);stroke-width:2px;vector-effect:non-scaling-stroke;fill-opacity:.8}
+.bmap.tap .mm.on-p:hover,.bmap.tap .mm.on-p:focus-visible{fill:var(--mm-p);fill-opacity:1}
 .bmap [data-porc-fibers]{pointer-events:none}
-.bmap .mm.plan-p{fill:var(--y-500);fill-opacity:.25}
-.bmap .mm.plan-s{fill:var(--y-500);fill-opacity:.12}
-.bmap .mm.mid-p{fill:var(--mm-p);fill-opacity:.55;filter:drop-shadow(0 0 2px var(--mm-p))}
-.bmap .mm.mid-s{fill:var(--y-600);fill-opacity:.32}
+.bmap .mm.plan-p{fill:var(--y-500);fill-opacity:.7}
+.bmap .mm.plan-s{fill:var(--y-500);fill-opacity:.3}
+.bmap .mm.mid-p{fill:var(--y-600);fill-opacity:1}
+.bmap .mm.mid-s{fill:var(--y-600);fill-opacity:.45}
 .pmap{margin:18px 0 8px}
 .pmap .mmap{margin:0}
 .pleg{display:flex;flex-wrap:wrap;justify-content:center;gap:6px;font-size:.78rem;color:var(--muted);margin:0 0 8px}
 .pleg i{display:inline-block;width:10px;height:10px;border-radius:3px;margin-right:5px;vertical-align:-1px}
-.pleg .lg0{background:var(--y-500);opacity:.3}.pleg .lg1{background:var(--mm-p);opacity:.55}.pleg .lg2{background:var(--mm-p);box-shadow:0 0 6px var(--mm-p)}
+.pleg .lg0{background:var(--y-500)}.pleg .lg1{background:var(--y-600)}.pleg .lg2{background:var(--mm-p)}
 .vlbl{display:block;text-align:center;font-size:.72rem;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-top:2px}
 .mmap{background:var(--ov-03);border:1px solid var(--ov-06);border-radius:16px;padding:10px}
 .mmv{max-width:320px}
@@ -373,8 +375,8 @@ body.hasbar .credito{padding-bottom:calc(230px + env(safe-area-inset-bottom,0px)
 .act p{margin:0;display:flex;gap:8px;align-items:baseline}
 .dots{flex:none;display:inline-flex;gap:3px}
 .dots i{width:8px;height:8px;border-radius:50%;border:1.5px solid var(--mm-p);display:inline-block}
-.dots i.f{background:var(--mm-p);box-shadow:0 0 6px var(--mm-p)}
-.dots.s i.f{background:var(--y-600);opacity:.8;box-shadow:none}.dots.s i{border-color:var(--y-600)}
+.dots i.f{background:var(--mm-p)}
+.dots.s i.f{background:var(--mm-s)}.dots.s i{border-color:var(--mm-s)}
 .sexsw,.seg{display:inline-flex;padding:3px;border-radius:14px;background:var(--ov-05);border:1px solid var(--line);gap:2px}
 .sexsw button,.seg button{min-height:44px;min-width:44px;padding:0 12px;border:0;border-radius:11px;background:none;color:var(--muted);font-weight:600;font-size:.88rem;display:inline-flex;align-items:center;gap:6px;transition:background .18s,color .18s}
 .sexsw button[aria-pressed="true"],.seg button[aria-pressed="true"]{background:var(--accent);color:var(--accent-ink);box-shadow:0 0 12px rgba(var(--gl),.4)}
@@ -1243,41 +1245,41 @@ const MN={peito:"Peito",dorsal:"Dorsal",trapezio:"Trapézio",lombar:"Lombar",cor
 const D=(id,r,m)=>({id,s:2,r,m:!!m});
 const P=(id,s,r,m)=>({id,s,r,m:!!m});
 const DEFAULT_DAYS=[
- {extra:"Pernas",items:[D("supino_reto","6 a 8",1),D("crossover_alto","12"),D("puxada_romana","8 a 10",1),D("remada_unil","10"),D("rosca_direta","8 a 10",1),D("triceps_frances","10",1),D("triceps_corda","12"),D("goblet","8 a 10",1),D("stiff","10"),{id:"cadeira_abdutora",s:3,r:"12 a 15",m:false,rest:60},D("pant_pe","12 a 15")]},
- {extra:"Ombro",items:[D("supino_incl","6 a 8",1),D("crucifixo","12"),D("remada_curvada","8 a 10",1),D("puxada_triangulo","10 a 12"),D("rosca_inclinada","10",1),D("rosca_concentrada","12"),D("triceps_testa","8 a 10",1),D("triceps_coice","12"),D("desenv_sentado","8 a 10",1),D("elev_lateral","12 a 15"),D("face_pull","12 a 15"),D("abd_polia","12 a 15"),D("prancha","30 a 45 s")]},
- {extra:"Pernas",items:[D("supino_reto_neutra","8 a 10",1),D("flexao","perto da falha"),D("barra_fixa","6 a 8",1),D("remada_tri_sentada","10"),D("rosca_martelo","8 a 10",1),D("triceps_frances_unil","10",1),D("triceps_corda","12"),D("bulgaro","8 por perna",1),D("elev_pelvica","10"),D("cadeira_adutora","12 a 15"),{id:"abducao_polia",s:3,r:"12 a 15",m:false,rest:60},D("pant_sentado","12 a 15")]},
- {extra:"Ombro",items:[D("supino_incl","8 a 10",1),D("crucifixo_incl","12"),D("remada_unil","8 a 10",1),D("puxada_romana","10 a 12"),D("rosca_direta","8 a 10",1),D("rosca_inclinada","12"),D("triceps_testa","8 a 10",1),D("triceps_coice","12"),D("arnold","8 a 10",1),D("elev_lateral","12 a 15"),D("y_raise","12 a 15"),D("abd_infra","12 a 15"),D("dead_bug","8 por lado")]},
- {extra:"Pernas",items:[D("supino_reto","6 a 8",1),D("supino_decl_halter","10"),D("remada_curvada","8 a 10",1),D("remada_baixa_aberta","10 a 12"),D("rosca_martelo","8 a 10",1),D("rosca_concentrada","12"),D("triceps_frances","10",1),D("triceps_corda","12"),D("afundo","8 por perna",1),D("mesa_flexora","10 a 12"),D("cadeira_abdutora","12 a 15"),D("hiperextensao","12")]},
- {extra:"Ombro",items:[D("supino_incl_neutra","8 a 10",1),D("flexao","perto da falha"),D("barra_fixa","6 a 8",1),D("remada_unil","10"),D("rosca_inclinada","10",1),D("rosca_direta","12"),D("triceps_testa","8 a 10",1),D("triceps_coice","12"),D("desenv_sentado","8 a 10",1),D("elev_posterior","12 a 15"),D("encolhimento","12"),D("abd_maquina","12 a 15"),D("pallof","10 por lado")]}
+ {extra:"Pernas",items:[D("supino_reto","6 a 8",1),D("crossover_alto","12"),D("puxada_romana","8 a 10",1),D("remada_unil","10"),D("rosca_direta","8 a 10",1),D("triceps_frances","10",1),D("triceps_corda","12"),D("goblet","8 a 10",1),D("stiff","10"),{id:"cadeira_abdutora",s:3,r:"12 a 15",m:false,rest:60},D("pant_pe","12 a 15"),D("abd_polia","12 a 15")]},
+ {extra:"Ombro",items:[D("supino_incl","6 a 8",1),D("crucifixo","12"),D("remada_curvada","8 a 10",1),D("puxada_triangulo","10 a 12"),D("rosca_inclinada","10",1),D("rosca_concentrada","12"),D("triceps_testa","8 a 10",1),D("triceps_coice","12"),D("desenv_sentado","8 a 10",1),D("elev_lateral","12 a 15"),D("face_pull","12 a 15"),D("abd_infra","12 a 15")]},
+ {extra:"Pernas",items:[D("supino_reto_neutra","8 a 10",1),D("flexao","perto da falha"),D("barra_fixa","6 a 8",1),D("remada_tri_sentada","10"),D("rosca_martelo","8 a 10",1),D("triceps_frances_unil","10",1),D("triceps_corda","12"),D("bulgaro","8 por perna",1),D("elev_pelvica","10"),D("cadeira_adutora","12 a 15"),{id:"abducao_polia",s:3,r:"12 a 15",m:false,rest:60},D("pant_sentado","12 a 15"),D("pallof","10 por lado")]},
+ {extra:"Ombro",items:[D("supino_incl","8 a 10",1),D("crucifixo_incl","12"),D("remada_unil","8 a 10",1),D("puxada_romana","10 a 12"),D("rosca_direta","8 a 10",1),D("rosca_inclinada","12"),D("triceps_testa","8 a 10",1),D("triceps_coice","12"),D("arnold","8 a 10",1),D("elev_lateral","12 a 15"),D("y_raise","12 a 15"),D("prancha","30 a 45 s")]},
+ {extra:"Pernas",items:[D("supino_reto","6 a 8",1),D("supino_decl_halter","10"),D("remada_curvada","8 a 10",1),D("remada_baixa_aberta","10 a 12"),D("rosca_martelo","8 a 10",1),D("rosca_concentrada","12"),D("triceps_frances","10",1),D("triceps_corda","12"),D("afundo","8 por perna",1),D("mesa_flexora","10 a 12"),D("cadeira_abdutora","12 a 15"),D("hiperextensao","12"),D("abd_maquina","12 a 15")]},
+ {extra:"Ombro",items:[D("supino_incl_neutra","8 a 10",1),D("flexao","perto da falha"),D("barra_fixa","6 a 8",1),D("remada_unil","10"),D("rosca_inclinada","10",1),D("rosca_direta","12"),D("triceps_testa","8 a 10",1),D("triceps_coice","12"),D("desenv_sentado","8 a 10",1),D("elev_posterior","12 a 15"),D("encolhimento","12"),D("prancha_lateral","30 s por lado")]}
 ];
 let DAYS=DEFAULT_DAYS;
 const PRESETS=[
- {id:"fullbody6",name:"Full body 6 dias (atual)",desc:"Seu treino atual: corpo todo, alternando pernas e ombro. Cada porção recebe trabalho principal na semana: peito inferior no crossover alto e no declinado, panturrilhas, adutores, glúteo médio, trapézio, lombar e abdômen entram como acessórios. O abdômen treina 3x na semana (dias 2, 4 e 6, no fim do treino, cerca de 12 séries): flexão de tronco, infra e anti-extensão/anti-rotação.",days:DEFAULT_DAYS},
- {id:"fullbody3",name:"Full body 3 dias",desc:"Corpo todo 3x na semana, com descanso entre os dias. Cada grupo treina 3x e as porções se revezam: peito superior, médio e inferior em dias diferentes, puxada vertical e remada, agachar e dobradiça de quadril, panturrilha e core. O abdômen treina nos 3 dias (cerca de 11 séries): flexão, infra e estabilidade.",days:[
-  {extra:"A",items:[P("supino_reto",3,"6 a 8",1),P("puxada_romana",3,"8 a 10",1),P("remada_baixa_aberta",2,"10 a 12"),P("goblet",3,"8 a 10",1),P("mesa_flexora",2,"10 a 12"),{id:"cadeira_abdutora",s:3,r:"12 a 15",m:false,rest:60},P("desenv_sentado",2,"8 a 10",1),P("triceps_corda",2,"12",1),P("pant_pe",2,"12 a 15"),P("abd_infra",3,"12 a 15")]},
-  {extra:"B",items:[P("supino_incl",4,"8 a 10",1),P("remada_curvada",3,"8 a 10",1),P("stiff",3,"10",1),P("elev_lateral",2,"12 a 15",1),P("face_pull",2,"12 a 15"),P("encolhimento",2,"12"),{id:"abducao_polia",s:3,r:"12 a 15",m:false,rest:60},P("rosca_martelo",2,"12",1),P("triceps_testa",2,"10",1),P("pallof",2,"10 por lado"),P("prancha",2,"30 a 45 s")]},
-  {extra:"C",items:[P("supino_decl_halter",3,"8 a 10",1),P("barra_fixa",3,"6 a 8",1),P("bulgaro",3,"8 por perna",1),P("cadeira_adutora",2,"12 a 15"),P("cadeira_abdutora",2,"12 a 15"),P("y_raise",2,"12 a 15"),P("hiperextensao",2,"12"),P("rosca_alternada",2,"12",1),P("triceps_frances",2,"10",1),P("pant_sentado",2,"12 a 15"),P("abd_polia",2,"12 a 15"),P("dead_bug",2,"8 por lado")]}]},
- {id:"abc3",name:"ABC 3 dias",desc:"A peito, tríceps e ombro. B costas, bíceps e ombro posterior. C pernas e lombar. Cobre todas as porções na semana; cada grupo treina 1x. O abdômen entra nos 3 dias, no fim do treino (cerca de 12 séries). Para treinar cada grupo 2x, repita a sequência (ABCABC).",days:[
-  {extra:"A",items:[P("supino_reto",4,"6 a 8",1),P("supino_incl",3,"8 a 10"),P("crossover_alto",3,"12"),P("triceps_testa",3,"8 a 10",1),P("triceps_corda",2,"12"),P("desenv_sentado",3,"8 a 10",1),P("elev_lateral",3,"12 a 15"),P("abd_polia",2,"12 a 15"),P("pallof",2,"10 por lado")]},
-  {extra:"B",items:[P("puxada_romana",3,"8 a 10",1),P("remada_curvada",3,"8 a 10"),P("remada_baixa_aberta",2,"10 a 12"),P("encolhimento",2,"12"),P("y_raise",2,"12 a 15"),P("face_pull",2,"12 a 15"),P("rosca_direta",3,"8 a 10",1),P("rosca_martelo",2,"12"),P("rosca_concentrada",2,"12"),P("abd_infra",2,"12 a 15"),P("prancha",2,"30 a 45 s")]},
-  {extra:"C",items:[P("goblet",3,"8 a 10",1),P("stiff",3,"10"),P("bulgaro",3,"8 por perna"),P("elev_pelvica",2,"10"),P("mesa_flexora",2,"10 a 12"),P("cadeira_adutora",2,"12 a 15"),P("cadeira_abdutora",2,"12 a 15"),P("hiperextensao",2,"12"),P("pant_pe",3,"12 a 15"),P("pant_sentado",2,"12 a 15"),P("elev_pernas",2,"12 a 15"),P("dead_bug",2,"8 por lado")]}]},
- {id:"abcd4",name:"ABCD 4 dias",desc:"A peito e tríceps. B costas e bíceps. C pernas. D ombro, braços e um segundo estímulo de peito. Todas as porções têm um exercício principal na semana. O abdômen treina em A, C e D (cerca de 12 séries).",days:[
-  {extra:"A",items:[P("supino_reto",3,"6 a 8",1),P("supino_incl",3,"8 a 10"),P("crucifixo_incl",2,"12"),P("crossover_alto",3,"12"),P("triceps_frances",3,"10",1),P("triceps_corda",2,"12"),P("abd_polia",2,"12 a 15"),P("abd_infra",2,"12 a 15")]},
-  {extra:"B",items:[P("barra_fixa",3,"6 a 8",1),P("remada_curvada",3,"8 a 10"),P("remada_baixa_aberta",2,"10 a 12"),P("encolhimento",2,"12"),P("y_raise",2,"12 a 15"),P("hiperextensao",2,"12"),P("rosca_direta",3,"8 a 10",1),P("rosca_martelo",2,"12")]},
-  {extra:"C",items:[P("goblet",3,"8 a 10",1),P("afundo",3,"8 por perna"),P("stiff",3,"10"),P("mesa_flexora",3,"10 a 12"),P("elev_pelvica",2,"12"),P("cadeira_adutora",2,"12 a 15"),P("cadeira_abdutora",2,"12 a 15"),P("pant_pe",3,"12 a 15"),P("pant_sentado",2,"12 a 15"),P("prancha",2,"30 a 45 s"),P("dead_bug",2,"8 por lado")]},
-  {extra:"D",items:[P("desenv_sentado",3,"8 a 10",1),P("supino_reto_neutra",3,"8 a 10"),P("elev_lateral",3,"12 a 15"),P("elev_posterior",2,"12 a 15"),P("face_pull",2,"12 a 15"),P("rosca_inclinada",2,"10",1),P("triceps_testa",2,"10",1),P("abd_maquina",2,"12 a 15"),P("pallof",2,"10 por lado")]}]},
- {id:"ul4",name:"Upper/Lower 4 dias",desc:"Superior e inferior alternados, 2x cada na semana. Cada grupo treina 2x; as porções se dividem entre A e B (peito inferior no A, superior no B; agachar no A, unilateral e glúteo no B). O abdômen treina em 3 dos 4 dias, no fim do treino (cerca de 10 séries).",days:[
-  {extra:"Sup A",items:[P("supino_reto",3,"6 a 8",1),P("remada_curvada",3,"8 a 10",1),P("desenv_sentado",2,"8 a 10",1),P("puxada_triangulo",2,"10 a 12"),P("crossover_alto",3,"12"),P("elev_lateral",2,"12 a 15"),P("face_pull",2,"12 a 15"),P("rosca_direta",2,"10",1),P("triceps_corda",2,"12",1),P("abd_polia",2,"12 a 15")]},
-  {extra:"Inf A",items:[P("goblet",3,"8 a 10",1),P("stiff",3,"10"),P("afundo",2,"8 por perna"),P("mesa_flexora",2,"10 a 12"),P("cadeira_adutora",2,"12 a 15"),{id:"cadeira_abdutora",s:3,r:"12 a 15",m:false,rest:60},P("pant_pe",3,"12 a 15"),P("abd_infra",2,"12 a 15"),P("dead_bug",2,"8 por lado")]},
-  {extra:"Sup B",items:[P("supino_incl",3,"8 a 10",1),P("puxada_romana",3,"8 a 10",1),P("arnold",2,"10",1),P("remada_baixa_aberta",2,"10 a 12"),P("crucifixo",2,"12"),P("elev_lateral",2,"12 a 15"),P("encolhimento",2,"12"),P("y_raise",2,"12 a 15"),P("rosca_martelo",2,"12",1),P("triceps_testa",2,"10",1)]},
-  {extra:"Inf B",items:[P("bulgaro",3,"8 por perna",1),P("elev_pelvica",3,"10"),P("stiff",2,"12"),P("mesa_flexora",2,"12"),P("cadeira_abdutora",2,"12 a 15"),P("hiperextensao",2,"12"),P("pant_sentado",3,"12 a 15"),P("prancha",2,"30 a 45 s"),P("pallof",2,"10 por lado")]}]},
- {id:"ppl6",name:"Push/Pull/Legs 6 dias",desc:"Empurrar, puxar e pernas, 2x na semana. Cada grupo treina 2x e cada porção tem exercício principal: peito superior, médio e inferior no Push; trapézio, romboides, lombar e deltoide posterior no Pull; adutores, glúteo médio e panturrilhas no Legs. O abdômen treina em 3 dias, no fim do treino (cerca de 12 séries).",days:[
-  {extra:"Push",items:[P("supino_reto",3,"6 a 8",1),P("supino_incl",2,"8 a 10"),P("crossover_alto",2,"12"),P("desenv_sentado",3,"8 a 10",1),P("elev_lateral",3,"12 a 15"),P("triceps_testa",2,"8 a 10",1),P("triceps_corda",2,"12")]},
-  {extra:"Pull",items:[P("barra_fixa",3,"6 a 8",1),P("remada_curvada",3,"8 a 10"),P("puxada_triangulo",2,"10 a 12"),P("elev_posterior",2,"12 a 15",1),P("encolhimento",2,"12"),P("rosca_direta",3,"8 a 10",1),P("rosca_martelo",2,"12"),P("abd_infra",2,"12 a 15"),P("dead_bug",2,"8 por lado")]},
-  {extra:"Legs",items:[P("goblet",3,"8 a 10",1),P("stiff",3,"10"),P("bulgaro",2,"8 por perna"),P("mesa_flexora",3,"10 a 12"),P("cadeira_adutora",2,"12 a 15"),{id:"abducao_polia",s:3,r:"12 a 15",m:false,rest:60},P("pant_pe",3,"12 a 15"),P("abd_polia",2,"12 a 15"),P("prancha",2,"30 a 45 s")]},
-  {extra:"Push",items:[P("supino_incl_neutra",3,"8 a 10",1),P("supino_decl_halter",2,"10"),P("crucifixo",2,"12"),P("arnold",3,"8 a 10",1),P("elev_lateral",3,"12 a 15"),P("triceps_frances",2,"10",1),P("triceps_coice",2,"12")]},
-  {extra:"Pull",items:[P("puxada_romana",3,"8 a 10",1),P("remada_unil",3,"10"),P("remada_baixa_aberta",2,"10 a 12"),P("face_pull",2,"12 a 15",1),P("y_raise",2,"12 a 15"),P("hiperextensao",2,"12"),P("rosca_inclinada",3,"10",1),P("rosca_concentrada",2,"12")]},
-  {extra:"Legs",items:[P("afundo",3,"8 por perna",1),P("elev_pelvica",3,"10"),P("stiff",2,"12"),P("mesa_flexora",2,"12"),P("cadeira_abdutora",2,"12 a 15"),P("pant_sentado",3,"12 a 15"),P("abd_maquina",2,"12 a 15"),P("pallof",2,"10 por lado")]}]}
+ {id:"fullbody6",name:"Full body 6 dias (atual)",desc:"Seu treino atual: corpo todo, alternando pernas e ombro. Cada porção recebe trabalho principal na semana: peito inferior no crossover alto e no declinado, panturrilhas, adutores, glúteo médio, trapézio, lombar e abdômen entram como acessórios. O abdômen treina todos os 6 dias, no fim do treino, com 1 exercício de 2 séries por dia (cerca de 12 séries na semana), alternando a região: reto superior, reto inferior, oblíquos, core (prancha), reto superior de novo e oblíquos.",days:DEFAULT_DAYS},
+ {id:"fullbody3",name:"Full body 3 dias",desc:"Corpo todo 3x na semana, com descanso entre os dias. Cada grupo treina 3x e as porções se revezam: peito superior, médio e inferior em dias diferentes, puxada vertical e remada, agachar e dobradiça de quadril, panturrilha e core. O abdômen treina nos 3 dias, no fim do treino, com 2 exercícios de 2 séries por dia (cerca de 12 séries na semana): A reto superior e core, B reto inferior e oblíquos, C oblíquos e core.",days:[
+  {extra:"A",items:[P("supino_reto",3,"6 a 8",1),P("puxada_romana",3,"8 a 10",1),P("remada_baixa_aberta",2,"10 a 12"),P("goblet",3,"8 a 10",1),P("mesa_flexora",2,"10 a 12"),{id:"cadeira_abdutora",s:3,r:"12 a 15",m:false,rest:60},P("desenv_sentado",2,"8 a 10",1),P("triceps_corda",2,"12",1),P("pant_pe",2,"12 a 15"),P("abd_polia",2,"12 a 15"),P("prancha",2,"30 a 45 s")]},
+  {extra:"B",items:[P("supino_incl",4,"8 a 10",1),P("remada_curvada",3,"8 a 10",1),P("stiff",3,"10",1),P("elev_lateral",2,"12 a 15",1),P("face_pull",2,"12 a 15"),P("encolhimento",2,"12"),{id:"abducao_polia",s:3,r:"12 a 15",m:false,rest:60},P("rosca_martelo",2,"12",1),P("triceps_testa",2,"10",1),P("abd_infra",2,"12 a 15"),P("pallof",2,"10 por lado")]},
+  {extra:"C",items:[P("supino_decl_halter",3,"8 a 10",1),P("barra_fixa",3,"6 a 8",1),P("bulgaro",3,"8 por perna",1),P("cadeira_adutora",2,"12 a 15"),P("cadeira_abdutora",2,"12 a 15"),P("y_raise",2,"12 a 15"),P("hiperextensao",2,"12"),P("rosca_alternada",2,"12",1),P("triceps_frances",2,"10",1),P("pant_sentado",2,"12 a 15"),P("lenhador",2,"10 por lado"),P("dead_bug",2,"8 por lado")]}]},
+ {id:"abc3",name:"ABC 3 dias",desc:"A peito, tríceps e ombro. B costas, bíceps e ombro posterior. C pernas e lombar. Cobre todas as porções na semana; cada grupo treina 1x. O abdômen entra nos 3 dias, no fim do treino, com 2 exercícios de 2 séries por dia (cerca de 12 séries na semana): A reto superior e core, B reto inferior e oblíquos, C reto superior e oblíquos. Para treinar cada grupo 2x, repita a sequência (ABCABC).",days:[
+  {extra:"A",items:[P("supino_reto",4,"6 a 8",1),P("supino_incl",3,"8 a 10"),P("crossover_alto",3,"12"),P("triceps_testa",3,"8 a 10",1),P("triceps_corda",2,"12"),P("desenv_sentado",3,"8 a 10",1),P("elev_lateral",3,"12 a 15"),P("abd_maquina",2,"12 a 15"),P("dead_bug",2,"8 por lado")]},
+  {extra:"B",items:[P("puxada_romana",3,"8 a 10",1),P("remada_curvada",3,"8 a 10"),P("remada_baixa_aberta",2,"10 a 12"),P("encolhimento",2,"12"),P("y_raise",2,"12 a 15"),P("face_pull",2,"12 a 15"),P("rosca_direta",3,"8 a 10",1),P("rosca_martelo",2,"12"),P("rosca_concentrada",2,"12"),P("elev_pernas",2,"12 a 15"),P("pallof",2,"10 por lado")]},
+  {extra:"C",items:[P("goblet",3,"8 a 10",1),P("stiff",3,"10"),P("bulgaro",3,"8 por perna"),P("elev_pelvica",2,"10"),P("mesa_flexora",2,"10 a 12"),P("cadeira_adutora",2,"12 a 15"),P("cadeira_abdutora",2,"12 a 15"),P("hiperextensao",2,"12"),P("pant_pe",3,"12 a 15"),P("pant_sentado",2,"12 a 15"),P("abd_polia",2,"12 a 15"),P("prancha_lateral",2,"30 s por lado")]}]},
+ {id:"abcd4",name:"ABCD 4 dias",desc:"A peito e tríceps. B costas e bíceps. C pernas. D ombro, braços e um segundo estímulo de peito. Todas as porções têm um exercício principal na semana. O abdômen treina nos 4 dias, no fim do treino, com 1 exercício de 3 séries por dia (12 séries na semana): A reto superior, B reto inferior, C oblíquos, D core.",days:[
+  {extra:"A",items:[P("supino_reto",3,"6 a 8",1),P("supino_incl",3,"8 a 10"),P("crucifixo_incl",2,"12"),P("crossover_alto",3,"12"),P("triceps_frances",3,"10",1),P("triceps_corda",2,"12"),P("abd_polia",3,"12 a 15")]},
+  {extra:"B",items:[P("barra_fixa",3,"6 a 8",1),P("remada_curvada",3,"8 a 10"),P("remada_baixa_aberta",2,"10 a 12"),P("encolhimento",2,"12"),P("y_raise",2,"12 a 15"),P("hiperextensao",2,"12"),P("rosca_direta",3,"8 a 10",1),P("rosca_martelo",2,"12"),P("abd_infra",3,"12 a 15")]},
+  {extra:"C",items:[P("goblet",3,"8 a 10",1),P("afundo",3,"8 por perna"),P("stiff",3,"10"),P("mesa_flexora",3,"10 a 12"),P("elev_pelvica",2,"12"),P("cadeira_adutora",2,"12 a 15"),P("cadeira_abdutora",2,"12 a 15"),P("pant_pe",3,"12 a 15"),P("pant_sentado",2,"12 a 15"),P("pallof",3,"10 por lado")]},
+  {extra:"D",items:[P("desenv_sentado",3,"8 a 10",1),P("supino_reto_neutra",3,"8 a 10"),P("elev_lateral",3,"12 a 15"),P("elev_posterior",2,"12 a 15"),P("face_pull",2,"12 a 15"),P("rosca_inclinada",2,"10",1),P("triceps_testa",2,"10",1),P("prancha",3,"30 a 45 s")]}]},
+ {id:"ul4",name:"Upper/Lower 4 dias",desc:"Superior e inferior alternados, 2x cada na semana. Cada grupo treina 2x; as porções se dividem entre A e B (peito inferior no A, superior no B; agachar no A, unilateral e glúteo no B). O abdômen treina nos 4 dias, no fim do treino, com 1 exercício de 3 séries por dia (12 séries na semana): Sup A reto superior, Inf A reto inferior, Sup B oblíquos, Inf B core.",days:[
+  {extra:"Sup A",items:[P("supino_reto",3,"6 a 8",1),P("remada_curvada",3,"8 a 10",1),P("desenv_sentado",2,"8 a 10",1),P("puxada_triangulo",2,"10 a 12"),P("crossover_alto",3,"12"),P("elev_lateral",2,"12 a 15"),P("face_pull",2,"12 a 15"),P("rosca_direta",2,"10",1),P("triceps_corda",2,"12",1),P("abd_maquina",3,"12 a 15")]},
+  {extra:"Inf A",items:[P("goblet",3,"8 a 10",1),P("stiff",3,"10"),P("afundo",2,"8 por perna"),P("mesa_flexora",2,"10 a 12"),P("cadeira_adutora",2,"12 a 15"),{id:"cadeira_abdutora",s:3,r:"12 a 15",m:false,rest:60},P("pant_pe",3,"12 a 15"),P("elev_pernas",3,"12 a 15")]},
+  {extra:"Sup B",items:[P("supino_incl",3,"8 a 10",1),P("puxada_romana",3,"8 a 10",1),P("arnold",2,"10",1),P("remada_baixa_aberta",2,"10 a 12"),P("crucifixo",2,"12"),P("elev_lateral",2,"12 a 15"),P("encolhimento",2,"12"),P("y_raise",2,"12 a 15"),P("rosca_martelo",2,"12",1),P("triceps_testa",2,"10",1),P("lenhador",3,"10 por lado")]},
+  {extra:"Inf B",items:[P("bulgaro",3,"8 por perna",1),P("elev_pelvica",3,"10"),P("stiff",2,"12"),P("mesa_flexora",2,"12"),P("cadeira_abdutora",2,"12 a 15"),P("hiperextensao",2,"12"),P("pant_sentado",3,"12 a 15"),P("dead_bug",3,"8 por lado")]}]},
+ {id:"ppl6",name:"Push/Pull/Legs 6 dias",desc:"Empurrar, puxar e pernas, 2x na semana. Cada grupo treina 2x e cada porção tem exercício principal: peito superior, médio e inferior no Push; trapézio, romboides, lombar e deltoide posterior no Pull; adutores, glúteo médio e panturrilhas no Legs. O abdômen treina nos 6 dias, no fim do treino, com 1 exercício de 2 séries por dia (cerca de 12 séries na semana): reto superior, reto inferior, oblíquos, core, reto superior e oblíquos.",days:[
+  {extra:"Push",items:[P("supino_reto",3,"6 a 8",1),P("supino_incl",2,"8 a 10"),P("crossover_alto",2,"12"),P("desenv_sentado",3,"8 a 10",1),P("elev_lateral",3,"12 a 15"),P("triceps_testa",2,"8 a 10",1),P("triceps_corda",2,"12"),P("abd_crunch",2,"12 a 15")]},
+  {extra:"Pull",items:[P("barra_fixa",3,"6 a 8",1),P("remada_curvada",3,"8 a 10"),P("puxada_triangulo",2,"10 a 12"),P("elev_posterior",2,"12 a 15",1),P("encolhimento",2,"12"),P("rosca_direta",3,"8 a 10",1),P("rosca_martelo",2,"12"),P("elev_pernas",2,"12 a 15")]},
+  {extra:"Legs",items:[P("goblet",3,"8 a 10",1),P("stiff",3,"10"),P("bulgaro",2,"8 por perna"),P("mesa_flexora",3,"10 a 12"),P("cadeira_adutora",2,"12 a 15"),{id:"abducao_polia",s:3,r:"12 a 15",m:false,rest:60},P("pant_pe",3,"12 a 15"),P("pallof",2,"10 por lado")]},
+  {extra:"Push",items:[P("supino_incl_neutra",3,"8 a 10",1),P("supino_decl_halter",2,"10"),P("crucifixo",2,"12"),P("arnold",3,"8 a 10",1),P("elev_lateral",3,"12 a 15"),P("triceps_frances",2,"10",1),P("triceps_coice",2,"12"),P("dead_bug",2,"8 por lado")]},
+  {extra:"Pull",items:[P("puxada_romana",3,"8 a 10",1),P("remada_unil",3,"10"),P("remada_baixa_aberta",2,"10 a 12"),P("face_pull",2,"12 a 15",1),P("y_raise",2,"12 a 15"),P("hiperextensao",2,"12"),P("rosca_inclinada",3,"10",1),P("rosca_concentrada",2,"12"),P("abd_polia",2,"12 a 15")]},
+  {extra:"Legs",items:[P("afundo",3,"8 por perna",1),P("elev_pelvica",3,"10"),P("stiff",2,"12"),P("mesa_flexora",2,"12"),P("cadeira_abdutora",2,"12 a 15"),P("pant_sentado",3,"12 a 15"),P("prancha_lateral",2,"30 s por lado")]}]}
 ];
 const START_W={puxada_romana:40,puxada_triangulo:33,mesa_flexora:39,rosca_martelo:8,triceps_corda:12,crucifixo:7,crucifixo_incl:5,remada_tri_sentada:40,elev_lateral:5};
 const LS="treino-fullbody-v1";
@@ -2540,7 +2542,7 @@ document.addEventListener("DOMContentLoaded",()=>{if(window.HUMANOID){for(const 
    O app aberto pela tela de início fica suspenso e o Pages guarda cache. Ao abrir, ao voltar a ficar visível e no
    pageshow vindo do cache, compara version.json com APP_VERSION. Se mudou, salva e recarrega com cache-busting.
    Não recarrega com descanso rodando ou campo em edição: mostra um aviso com botão. */
-const APP_VERSION="20261112205050";
+const APP_VERSION="20261112215324";
 let verLast=0,verNew=null;
 function busy(){
   const t=$("#timer");if(t&&t.classList.contains("on")&&!t.classList.contains("end"))return true;
