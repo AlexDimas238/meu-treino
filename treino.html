@@ -1292,6 +1292,12 @@ function migrateState(s,o){
       return q;});
     return r;
   });
+  /* Carga e repetições valem por exercício (id do catálogo), não por dia nem por programa: o que faltar vem do último treino registrado */
+  for(const h of s.history.slice().sort((a,b)=>(+b.date||0)-(+a.date||0)))for(const e of h.ex){
+    const last=[...e.sets].reverse().find(y=>y&&(y.w!=null||y.r!=null));if(!last)continue;
+    if(s.weights[e.id]===undefined&&last.w!=null&&last.w!==""){const n=toNum(last.w);if(n!==null)s.weights[e.id]=n;}
+    if(s.lastReps[e.id]===undefined&&last.r!=null&&last.r!==""){const n=toNum(last.r);if(n!==null)s.lastReps[e.id]=n;}
+  }
   s.schema=2;
   return s;
 }
@@ -1482,11 +1488,12 @@ function cardHTML(day,it,i){
   let rows="";
   for(let k=0;k<it.s;k++){
     const s=arr[k]||{};
-    const wv=s.w!=null?s.w:(w!=null?w:"");
+    /* série feita mostra o que foi registrado; as demais mostram o último valor do exercício, igual em qualquer treino */
+    const wv=s.done&&s.w!=null?s.w:(w!=null?w:(s.w!=null?s.w:""));
     rows+=`<div class="set${s.done?" done":""}" data-k="${k}">
      <span class="sn">${k+1}</span>
      <label class="fld"><input inputmode="decimal" aria-label="Carga série ${k+1}" data-f="w" value="${esc(wv)}" placeholder="0"><span>kg</span></label>
-     <label class="fld"><input inputmode="numeric" aria-label="Repetições série ${k+1}" data-f="r" value="${esc(s.r!=null?s.r:(lr!=null?lr:""))}" placeholder="${minReps(it.r)}"><span>reps</span></label>
+     <label class="fld"><input inputmode="numeric" aria-label="Repetições série ${k+1}" data-f="r" value="${esc(s.done&&s.r!=null?s.r:(lr!=null?lr:(s.r!=null?s.r:"")))}" placeholder="${minReps(it.r)}"><span>reps</span></label>
      <button type="button" class="chk" data-act="done" aria-label="Marcar série ${k+1} como feita" aria-pressed="${!!s.done}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7"/></svg></button>
     </div>`;
   }
@@ -2372,6 +2379,7 @@ document.addEventListener("input",ev=>{
   const s=state.session&&state.session.day===day?state.session:null;
   if(s){const arr=s.sets[key]||(s.sets[key]=[]);const cur=arr[k]||(arr[k]={w:null,r:null,done:false});
     if(v===""||ok)cur[f]=num;}
+  if(ok){if(f==="w")state.weights[it.id]=num;else state.lastReps[it.id]=num;}
   save();
 });
 document.addEventListener("change",ev=>{
@@ -2410,6 +2418,7 @@ function finish(){
     arr.forEach(x=>{n++;vol+=(x.w||0)*(x.r||0);});
     const e=EX[it.id];
     ex.push({id:it.id,uid:it.uid,n:e?e.n:it.id,g:e?e.g:"",sets:arr.map(x=>({w:x.w,r:x.r}))});
+    const z=arr[arr.length-1];if(z.w!=null&&isFinite(z.w))state.weights[it.id]=z.w;if(z.r!=null&&isFinite(z.r))state.lastReps[it.id]=z.r;
   });
   if(!n)return;
   const p=findProg(state.activeProgram);
@@ -2456,7 +2465,7 @@ document.addEventListener("DOMContentLoaded",()=>{if(window.HUMANOID){for(const 
    O app aberto pela tela de início fica suspenso e o Pages guarda cache. Ao abrir, ao voltar a ficar visível e no
    pageshow vindo do cache, compara version.json com APP_VERSION. Se mudou, salva e recarrega com cache-busting.
    Não recarrega com descanso rodando ou campo em edição: mostra um aviso com botão. */
-const APP_VERSION="20261112194242";
+const APP_VERSION="20261112194948";
 let verLast=0,verNew=null;
 function busy(){
   const t=$("#timer");if(t&&t.classList.contains("on")&&!t.classList.contains("end"))return true;
